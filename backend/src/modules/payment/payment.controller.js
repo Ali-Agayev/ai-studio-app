@@ -11,7 +11,7 @@ const createCheckoutSession = async (req, res) => {
 
     // Qiymət Paketləri (Kreditlər -> USD)
     const priceMap = {
-        100: 1.50,
+        100: 1.00,
         500: 4.00,
         1000: 6.99
     };
