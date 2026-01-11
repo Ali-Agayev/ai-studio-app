@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
 
@@ -50,4 +51,71 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ error: "User with this email not found" });
+
+    // 6 rəqəmli kod yarat
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 dəqiqə
+
+    await prisma.user.update({
+      where: { email },
+      data: { resetCode, resetCodeExpires: expires }
+    });
+
+    // Email göndər
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    const mailOptions = {
+      from: `"AI Studio Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Password Reset Code',
+      text: `Your password reset code is: ${resetCode}. It will expire in 15 minutes.`
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Reset code sent to your email ✅" });
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ error: "Error sending reset email" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, resetCode, newPassword } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.resetCode !== resetCode || new Date() > user.resetCodeExpires) {
+      return res.status(400).json({ error: "Invalid or expired reset code" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { email },
+      data: {
+        password: hashedPassword,
+        resetCode: null,
+        resetCodeExpires: null
+      }
+    });
+
+    res.json({ message: "Password reset successful! You can now login. ✅" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ error: "Error resetting password" });
+  }
+};
+
+module.exports = { register, login, forgotPassword, resetPassword };

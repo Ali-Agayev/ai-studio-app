@@ -53,6 +53,10 @@ const Login = () => {
                     <button type="submit" className="btn">Login</button>
                 </form>
 
+                <div className="text-center mt-3">
+                    <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Forgot Password?</Link>
+                </div>
+
                 <div className="text-center mt-4">
                     <Link to="/register" className="link-text">Don't have an account? Register</Link>
                 </div>
