@@ -45,9 +45,9 @@ const Dashboard = () => {
     }, []);
 
     // Stripe Ödəniş
-    const handleTopUp = async () => {
+    const handleTopUp = async (creditAmount) => {
         try {
-            const res = await axios.post('/payment/create-checkout-session', { amount: 50 }, { headers: getHeaders() });
+            const res = await axios.post('/payment/create-checkout-session', { amount: creditAmount }, { headers: getHeaders() });
             if (res.data.url) {
                 window.location.href = res.data.url;
             }
@@ -59,14 +59,16 @@ const Dashboard = () => {
     // Uğurlu ödənişdən qayıdan zaman (URL-də ?success=true varsa)
     useEffect(() => {
         const query = new URLSearchParams(window.location.search);
-        if (query.get("success")) {
-            // Demo: Serverə təsdiqləmə göndər
+        const success = query.get("success");
+        if (success) {
             const demoConfirm = async () => {
                 try {
-                    const user = await axios.get('/user/me', { headers: getHeaders() });
-                    await axios.post('/payment/confirm-payment', { userId: user.data.id, amount: 50 }, { headers: getHeaders() });
-                    alert("Payment successful! Balance updated. 🎉");
-                    setBalance(prev => prev + 50);
+                    const userRes = await axios.get('/user/me', { headers: getHeaders() });
+                    // QEYD: Realda bu məlumatı Stripe Webhook-dan almaq daha təhlükəsizdir.
+                    // Amma demo üçün URL-dən və ya session-dan təxmini məlumat ala bilərik.
+                    // Hal-hazırda sadəcə balansı yeniləmək üçün profil sorğusu atırıq.
+                    setBalance(userRes.data.balance);
+                    alert("Payment successful! Your balance has been updated. 🎉");
                     window.history.replaceState({}, document.title, "/");
                 } catch (e) {
                     console.error(e);
@@ -78,7 +80,7 @@ const Dashboard = () => {
             alert("Payment canceled.");
             window.history.replaceState({}, document.title, "/");
         }
-    }, []);
+    }, [navigate]);
 
     // Şəkil yaratma / edit / variasiya
     const handleGenerate = async (e) => {

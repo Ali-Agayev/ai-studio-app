@@ -4,8 +4,20 @@ const stripe = process.env.STRIPE_SECRET_KEY ? require("stripe")(process.env.STR
 
 const createCheckoutSession = async (req, res) => {
     const userId = req.user.id;
-    const { amount } = req.body; // Məsələn: 50
-    const priceInCents = amount * 10; // 50 kredit = 500 qəpik (5.00 USD)
+    const { amount } = req.body; // Kredit miqdarı: 100, 500 və ya 1000
+
+    // Qiymət xəritəsi (Kredit -> Cents)
+    const priceMap = {
+        100: 150,  // $1.50
+        500: 400,  // $4.00
+        1000: 700  // $7.00
+    };
+
+    const priceInCents = priceMap[amount];
+
+    if (!priceInCents) {
+        return res.status(400).json({ error: "Invalid credit amount package" });
+    }
 
     if (!stripe) {
         return res.status(500).json({ error: "Stripe is not configured" });
@@ -18,11 +30,11 @@ const createCheckoutSession = async (req, res) => {
                     price_data: {
                         currency: "usd",
                         product_data: {
-                            name: `${amount} Credits`,
+                            name: `${amount} Credits Pack`,
                         },
-                        unit_amount: 1, // 1 kredit = 1 sent. 50 kredit = 50 sent.
+                        unit_amount: priceInCents,
                     },
-                    quantity: amount,
+                    quantity: 1,
                 },
             ],
             mode: "payment",
