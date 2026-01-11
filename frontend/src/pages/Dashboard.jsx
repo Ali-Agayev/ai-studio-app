@@ -238,14 +238,24 @@ const Dashboard = () => {
                         {(mode === 'edit' || mode === 'variation') && (
                             <div className="form-group">
                                 <label className="form-label">Upload Image</label>
-                                <input
-                                    type="file"
-                                    accept="image/png"
-                                    className="form-input"
-                                    onChange={(e) => setFile(e.target.files[0])}
-                                    required
-                                />
-                                <small style={{ color: 'var(--text-secondary)' }}>PNG format, max 4MB</small>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label className="btn btn-outline" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
+                                        {file ? 'Change image' : 'Choose Image File'}
+                                        <input
+                                            type="file"
+                                            accept="image/png"
+                                            style={{ display: 'none' }}
+                                            onChange={(e) => setFile(e.target.files[0])}
+                                            required={!file}
+                                        />
+                                    </label>
+                                    {file && (
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--success)', textAlign: 'center' }}>
+                                            Selected: {file.name}
+                                        </div>
+                                    )}
+                                </div>
+                                <small style={{ color: 'var(--text-secondary)', marginTop: '5px', display: 'block' }}>PNG format, max 4MB</small>
                             </div>
                         )}
 
