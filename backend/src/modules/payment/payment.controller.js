@@ -23,8 +23,12 @@ const createCheckoutSession = async (req, res) => {
         return res.status(500).json({ error: "Stripe is not configured" });
     }
     try {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
+            customer_email: user.email, // Email avtomatik doldurulur
             line_items: [
                 {
                     price_data: {
