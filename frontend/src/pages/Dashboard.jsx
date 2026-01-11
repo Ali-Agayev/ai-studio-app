@@ -46,8 +46,15 @@ const Dashboard = () => {
         }
     }, []);
 
-    // Stripe Ödəniş
+    // Stripe/Payriff Ödəniş
     const handleTopUp = async (creditAmount) => {
+        // Yoxlama: İstifadəçi giriş edibmi?
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/register');
+            return;
+        }
+
         try {
             const res = await axios.post('/payment/create-checkout-session', { amount: creditAmount }, { headers: getHeaders() });
             if (res.data.url) {
