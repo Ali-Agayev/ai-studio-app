@@ -1,12 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? require("stripe")(process.env.STRIPE_SECRET_KEY) : null;
 
 const createCheckoutSession = async (req, res) => {
     const userId = req.user.id;
     const { amount } = req.body; // Məsələn: 50
     const priceInCents = amount * 10; // 50 kredit = 500 qəpik (5.00 USD)
 
+    if (!stripe) {
+        return res.status(500).json({ error: "Stripe is not configured" });
+    }
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
