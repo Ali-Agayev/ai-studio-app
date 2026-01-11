@@ -9,7 +9,7 @@ const getProfile = async (req, res) => {
         });
         res.json(user);
     } catch (error) {
-        res.status(500).json({ error: "İstifadəçi məlumatları alına bilmədi" });
+        res.status(500).json({ error: "Failed to fetch user profile" });
     }
 };
 

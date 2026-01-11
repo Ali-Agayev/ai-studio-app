@@ -18,7 +18,7 @@ const createCheckoutSession = async (req, res) => {
                     price_data: {
                         currency: "usd",
                         product_data: {
-                            name: `${amount} Kredit`,
+                            name: `${amount} Credits`,
                         },
                         unit_amount: 1, // 1 kredit = 1 sent. 50 kredit = 50 sent.
                     },
@@ -26,8 +26,8 @@ const createCheckoutSession = async (req, res) => {
                 },
             ],
             mode: "payment",
-            success_url: `http://localhost:5173/?success=true`,
-            cancel_url: `http://localhost:5173/?canceled=true`,
+            success_url: `https://ai-studio-app-tau.vercel.app/?success=true`,
+            cancel_url: `https://ai-studio-app-tau.vercel.app/?canceled=true`,
             metadata: {
                 userId: userId.toString(),
                 creditAmount: amount.toString(),
@@ -37,7 +37,7 @@ const createCheckoutSession = async (req, res) => {
         res.json({ url: session.url });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Stripe sessiyası yaradılarkən xəta baş verdi" });
+        res.status(500).json({ error: "An error occurred while creating Stripe session" });
     }
 };
 

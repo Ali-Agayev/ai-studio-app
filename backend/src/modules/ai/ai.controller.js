@@ -3,7 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const fs = require('fs');
 const prisma = new PrismaClient();
 
-const IMAGE_COST = 10; // Hər şəkil üçün 10 kredit
+const IMAGE_COST = 10; // 10 credits per image
 
 const generateImage = async (req, res) => {
     try {
@@ -11,13 +11,13 @@ const generateImage = async (req, res) => {
         const userId = req.user.id; // Auth middleware-dən gəlir
 
         if (!prompt) {
-            return res.status(400).json({ error: "Prompt tələb olunur" });
+            return res.status(400).json({ error: "Prompt is required" });
         }
 
         // Balansı yoxla
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (user.balance < IMAGE_COST) {
-            return res.status(403).json({ error: "Balansınız kifayət etmir" });
+            return res.status(403).json({ error: "Insufficient balance" });
         }
 
         // Şəkli yarat
@@ -50,10 +50,10 @@ const editImage = async (req, res) => {
         const userId = req.user.id;
         const file = req.file;
 
-        if (!file) return res.status(400).json({ error: "Şəkil yüklənməlidir" });
+        if (!file) return res.status(400).json({ error: "Image file is required" });
         if (!prompt) {
             fs.unlinkSync(file.path);
-            return res.status(400).json({ error: "Prompt tələb olunur" });
+            return res.status(400).json({ error: "Prompt is required" });
         }
 
         const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -89,7 +89,7 @@ const createVariation = async (req, res) => {
         const userId = req.user.id;
         const file = req.file;
 
-        if (!file) return res.status(400).json({ error: "Şəkil yüklənməlidir" });
+        if (!file) return res.status(400).json({ error: "Image file is required" });
 
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (user.balance < IMAGE_COST) {
