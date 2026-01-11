@@ -155,10 +155,18 @@ const Dashboard = () => {
 
             <div className="balance-card">
                 <h3>Your Balance</h3>
-                <div className="balance-amount">{balance} Credits</div>
-                <button onClick={() => handleTopUp(1000)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '2px solid #ffd700' }}>
-                    1000 Credits ($6.99) 🔥
-                </button>
+                <div className="balance-amount">{Math.floor(balance / 10)} Images</div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
+                    <button onClick={() => handleTopUp(100)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                        10 Images ($1.50)
+                    </button>
+                    <button onClick={() => handleTopUp(500)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                        50 Images ($4.00)
+                    </button>
+                    <button onClick={() => handleTopUp(1000)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '2px solid #ffd700' }}>
+                        100 Images ($6.99) 🔥
+                    </button>
+                </div>
             </div>
 
             <div className="grid-cols-2">
@@ -197,7 +205,7 @@ const Dashboard = () => {
                         {mode === 'generate' && "Describe the image you imagine."}
                         {mode === 'edit' && "Upload an image and describe the part you want to change (PNG + Transparency)."}
                         {mode === 'variation' && "Upload an image to create similar variations."}
-                        <br />Price: 10 Credits
+                        <br />Price: 1 Image
                     </p>
 
                     <form onSubmit={handleGenerate}>

@@ -30,7 +30,7 @@ const createCheckoutSession = async (req, res) => {
                     price_data: {
                         currency: "usd",
                         product_data: {
-                            name: `${amount} Credits Pack`,
+                            name: `${amount / 10} Images Pack`,
                         },
                         unit_amount: priceInCents,
                     },
