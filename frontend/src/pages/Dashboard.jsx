@@ -98,10 +98,7 @@ const Dashboard = () => {
         // Yoxlama: İstifadəçi giriş edibmi?
         const token = localStorage.getItem('token');
         if (!token) {
-            // Giriş etməyibsə -> Qeydiyyata yönləndir
-            if (window.confirm("You must be logged in to use this feature.\nDo you want to proceed to registration?")) {
-                navigate('/register');
-            }
+            navigate('/register');
             return;
         }
 
@@ -189,7 +186,7 @@ const Dashboard = () => {
                 <h3>Your Balance</h3>
                 <div className="balance-amount">{Math.floor(balance / 10)} Images</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
-                    <button onClick={() => handleTopUp(10)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                    <button onClick={() => handleTopUp(100)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
                         10 Images ($0.99)
                     </button>
                     <button onClick={() => handleTopUp(500)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
