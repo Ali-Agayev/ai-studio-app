@@ -56,7 +56,7 @@ const webhook = async (req, res) => {
 
 // Bu funksiya sadəcə demo üçün qalır, amma Stripe ilə əvəz olunacaq
 const topUp = async (req, res) => {
-    return res.status(400).json({ error: "Köhnə metod. Yeni metod: /create-checkout-session" });
+    return res.status(400).json({ error: "Deprecated method. Use /create-checkout-session instead." });
 };
 
 // Uğurlu ödəniş təsdiqi (Demo üçün sadələşdirilmiş)

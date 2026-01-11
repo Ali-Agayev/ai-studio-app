@@ -59,7 +59,7 @@ const editImage = async (req, res) => {
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (user.balance < IMAGE_COST) {
             fs.unlinkSync(file.path);
-            return res.status(403).json({ error: "Balansınız kifayət etmir" });
+            return res.status(403).json({ error: "Insufficient balance" });
         }
 
         const imageUrl = await aiService.editImage(file.path, prompt);
@@ -94,7 +94,7 @@ const createVariation = async (req, res) => {
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (user.balance < IMAGE_COST) {
             fs.unlinkSync(file.path);
-            return res.status(403).json({ error: "Balansınız kifayət etmir" });
+            return res.status(403).json({ error: "Insufficient balance" });
         }
 
         const imageUrl = await aiService.createVariation(file.path);

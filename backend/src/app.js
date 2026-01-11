@@ -25,7 +25,7 @@ const paymentRoutes = require("./modules/payment/payment.routes");
 app.use("/payment", paymentRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Backend işləyir ✅");
+  res.send("Backend is running ✅");
 });
 
 module.exports = app;

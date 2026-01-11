@@ -8,7 +8,7 @@ const fs = require("fs");
 
 const generateImage = async (prompt) => {
   if (!openai) {
-    throw new Error("OpenAI API açarı tapılmadı. Zəhmət olmasa .env faylını yoxlayın.");
+    throw new Error("OpenAI API key not found. Please check your configuration.");
   }
 
   try {
@@ -21,12 +21,12 @@ const generateImage = async (prompt) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Error:", error);
-    throw new Error("Şəkil yaradılarkən xəta baş verdi.");
+    throw new Error("An error occurred while generating image.");
   }
 };
 
 const editImage = async (imagePath, prompt) => {
-  if (!openai) throw new Error("OpenAI API açarı tapılmadı");
+  if (!openai) throw new Error("OpenAI API key not found");
 
   try {
     const response = await openai.images.edit({
@@ -38,12 +38,12 @@ const editImage = async (imagePath, prompt) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Edit Error:", error);
-    throw new Error("Şəkil redaktə edilərkən xəta baş verdi: " + error.message);
+    throw new Error("An error occurred while editing image: " + error.message);
   }
 };
 
 const createVariation = async (imagePath) => {
-  if (!openai) throw new Error("OpenAI API açarı tapılmadı");
+  if (!openai) throw new Error("OpenAI API key not found");
 
   try {
     const response = await openai.images.createVariation({
@@ -54,7 +54,7 @@ const createVariation = async (imagePath) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Variation Error:", error);
-    throw new Error("Şəkil variasiyası yaradılarkən xəta baş verdi: " + error.message);
+    throw new Error("An error occurred while creating image variation: " + error.message);
   }
 };
 
