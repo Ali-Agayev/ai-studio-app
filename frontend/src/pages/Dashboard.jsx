@@ -10,6 +10,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [balance, setBalance] = useState(0);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     // Token ilə headers
@@ -33,6 +34,7 @@ const Dashboard = () => {
                 try {
                     const res = await axios.get('/user/me', { headers: getHeaders() });
                     setBalance(res.data.balance);
+                    setUser(res.data);
                 } catch (err) {
                     console.error("Token invalid", err);
                     // Token xarabdırsa silmirik, bəlkə server xətasıdır. 
@@ -141,9 +143,32 @@ const Dashboard = () => {
         <div className="dashboard-layout">
             <div className="header">
                 <h1>AI Studio</h1>
-                <div>
-                    {localStorage.getItem('token') ? (
-                        <button onClick={handleLogout} className="btn" style={{ backgroundColor: '#334155' }}>Logout</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    {localStorage.getItem('token') && user ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div style={{ textAlign: 'right', display: 'none', lg: 'block' }}>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Account</div>
+                                <div style={{ fontSize: '0.95rem', fontWeight: '500' }}>{user.email}</div>
+                            </div>
+                            <div className="account-badge" style={{
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                padding: '8px 15px',
+                                borderRadius: '12px',
+                                border: '1px solid rgba(59, 130, 246, 0.2)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <span style={{ fontSize: '1.2rem' }}>👤</span>
+                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(balance / 10)} Images</span>
+                            </div>
+                            <button onClick={handleLogout} className="btn" style={{
+                                backgroundColor: '#334155',
+                                width: 'auto',
+                                padding: '8px 15px',
+                                fontSize: '0.9rem'
+                            }}>Logout</button>
+                        </div>
                     ) : (
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button onClick={() => navigate('/login')} className="btn" style={{ backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>Login</button>
