@@ -156,8 +156,8 @@ const Dashboard = () => {
             <div className="balance-card">
                 <h3>Your Balance</h3>
                 <div className="balance-amount">{balance} Credits</div>
-                <button onClick={handleTopUp} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1.5rem' }}>
-                    Top Up (+50 Credits / $0.50)
+                <button onClick={() => handleTopUp(1000)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '2px solid #ffd700' }}>
+                    1000 Credits ($6.99) 🔥
                 </button>
             </div>
 

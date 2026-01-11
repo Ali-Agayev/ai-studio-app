@@ -10,7 +10,7 @@ const createCheckoutSession = async (req, res) => {
     const priceMap = {
         100: 150,  // $1.50
         500: 400,  // $4.00
-        1000: 700  // $7.00
+        1000: 699  // $6.99
     };
 
     const priceInCents = priceMap[amount];
