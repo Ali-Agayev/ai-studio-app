@@ -11,10 +11,20 @@ const register = async (req, res) => {
     const user = await prisma.user.create({
       data: { email, password: hash }
     });
+
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing");
+      return res.status(500).json({ error: "Server error: JWT_SECRET not configured" });
+    }
+
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.json({ message: "Registration successful ✅", token });
   } catch (err) {
-    res.status(400).json({ error: "Email already exists" });
+    console.error("Registration error:", err);
+    if (err.code === 'P2002') {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+    res.status(500).json({ error: "Internal server error during registration" });
   }
 };
 
