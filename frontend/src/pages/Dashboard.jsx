@@ -183,10 +183,10 @@ const Dashboard = () => {
                 <div className="balance-amount">{Math.floor(balance / 10)} Images</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
                     <button onClick={() => handleTopUp(10)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                        10 Images ($1.00)
+                        10 Images ($0.99)
                     </button>
                     <button onClick={() => handleTopUp(500)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                        50 Images ($4.00)
+                        50 Images ($3.99)
                     </button>
                     <button onClick={() => handleTopUp(1000)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '2px solid #ffd700' }}>
                         100 Images ($6.99) 🔥
