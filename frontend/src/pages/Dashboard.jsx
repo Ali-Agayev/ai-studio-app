@@ -146,9 +146,9 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     {localStorage.getItem('token') && user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <div style={{ textAlign: 'right', display: 'none', lg: 'block' }}>
-                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Account</div>
-                                <div style={{ fontSize: '0.95rem', fontWeight: '500' }}>{user.email}</div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Logged in as</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-primary)' }}>{user.email}</div>
                             </div>
                             <div className="account-badge" style={{
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
