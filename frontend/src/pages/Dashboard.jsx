@@ -1,0 +1,264 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+const Dashboard = () => {
+    const [mode, setMode] = useState('generate'); // generate, edit, variation
+    const [file, setFile] = useState(null);
+    const [prompt, setPrompt] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [balance, setBalance] = useState(0);
+    const navigate = useNavigate();
+
+    // Token ilə headers
+    const getHeaders = () => {
+        const token = localStorage.getItem('token');
+        return { Authorization: `Bearer ${token}` };
+    };
+
+    // Logout funksiyası
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    // Balansı yüklə
+    // İlk yüklənəndə token varsa balansı yoxla
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const fetchProfile = async () => {
+                try {
+                    const res = await axios.get('/user/me', { headers: getHeaders() });
+                    setBalance(res.data.balance);
+                } catch (err) {
+                    console.error("Token invalid", err);
+                    // Token xarabdırsa silmirik, bəlkə server xətasıdır. 
+                    // Amma 401 olsa çıxış verə bilərik.
+                    if (err.response?.status === 401) handleLogout();
+                }
+            };
+            fetchProfile();
+        }
+    }, []);
+
+    // Stripe Ödəniş
+    const handleTopUp = async () => {
+        try {
+            const res = await axios.post('/payment/create-checkout-session', { amount: 50 }, { headers: getHeaders() });
+            if (res.data.url) {
+                window.location.href = res.data.url;
+            }
+        } catch (err) {
+            alert("Error occurred: " + (err.response?.data?.error || err.message));
+        }
+    };
+
+    // Uğurlu ödənişdən qayıdan zaman (URL-də ?success=true varsa)
+    useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+        if (query.get("success")) {
+            // Demo: Serverə təsdiqləmə göndər
+            const demoConfirm = async () => {
+                try {
+                    const user = await axios.get('/user/me', { headers: getHeaders() });
+                    await axios.post('/payment/confirm-payment', { userId: user.data.id, amount: 50 }, { headers: getHeaders() });
+                    alert("Payment successful! Balance updated. 🎉");
+                    setBalance(prev => prev + 50);
+                    window.history.replaceState({}, document.title, "/");
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            demoConfirm();
+        }
+        if (query.get("canceled")) {
+            alert("Payment canceled.");
+            window.history.replaceState({}, document.title, "/");
+        }
+    }, []);
+
+    // Şəkil yaratma / edit / variasiya
+    const handleGenerate = async (e) => {
+        e.preventDefault();
+
+        // Yoxlama: İstifadəçi giriş edibmi?
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Giriş etməyibsə -> Qeydiyyata yönləndir
+            if (window.confirm("You must be logged in to use this feature.\nDo you want to proceed to registration?")) {
+                navigate('/register');
+            }
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setImageUrl('');
+
+        try {
+            const formData = new FormData();
+
+            if (mode === 'generate') {
+                const res = await axios.post('/ai/generate', { prompt }, { headers: getHeaders() });
+                setImageUrl(res.data.imageUrl);
+                setBalance(res.data.remainingBalance);
+            } else {
+                if (!file) {
+                    setError("Please upload an image");
+                    setLoading(false);
+                    return;
+                }
+                formData.append('image', file);
+
+                let endpoint = '';
+                if (mode === 'edit') {
+                    formData.append('prompt', prompt);
+                    endpoint = '/ai/edit';
+                } else if (mode === 'variation') {
+                    endpoint = '/ai/variation';
+                }
+
+                const res = await axios.post(endpoint, formData, {
+                    headers: { ...getHeaders(), 'Content-Type': 'multipart/form-data' }
+                });
+                setImageUrl(res.data.imageUrl);
+                setBalance(res.data.remainingBalance);
+            }
+
+        } catch (err) {
+            setError(err.response?.data?.error || 'An error occurred');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="dashboard-layout">
+            <div className="header">
+                <h1>AI Studio</h1>
+                <div>
+                    {localStorage.getItem('token') ? (
+                        <button onClick={handleLogout} className="btn" style={{ backgroundColor: '#334155' }}>Logout</button>
+                    ) : (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button onClick={() => navigate('/login')} className="btn" style={{ backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>Login</button>
+                            <button onClick={() => navigate('/register')} className="btn">Register</button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="balance-card">
+                <h3>Your Balance</h3>
+                <div className="balance-amount">{balance} Credits</div>
+                <button onClick={handleTopUp} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1.5rem' }}>
+                    Top Up (+50 Credits / $0.50)
+                </button>
+            </div>
+
+            <div className="grid-cols-2">
+                <div className="card">
+                    {/* Mode Switcher */}
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
+                        <button
+                            className={`btn ${mode === 'generate' ? '' : 'btn-outline'}`}
+                            style={{ flex: 1, backgroundColor: mode === 'generate' ? 'var(--accent-primary)' : 'transparent', color: mode === 'generate' ? 'white' : 'var(--text-primary)' }}
+                            onClick={() => setMode('generate')}
+                        >
+                            Generate
+                        </button>
+                        <button
+                            className={`btn ${mode === 'edit' ? '' : 'btn-outline'}`}
+                            style={{ flex: 1, backgroundColor: mode === 'edit' ? 'var(--accent-primary)' : 'transparent', color: mode === 'edit' ? 'white' : 'var(--text-primary)' }}
+                            onClick={() => setMode('edit')}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className={`btn ${mode === 'variation' ? '' : 'btn-outline'}`}
+                            style={{ flex: 1, backgroundColor: mode === 'variation' ? 'var(--accent-primary)' : 'transparent', color: mode === 'variation' ? 'white' : 'var(--text-primary)' }}
+                            onClick={() => setMode('variation')}
+                        >
+                            Variation
+                        </button>
+                    </div>
+
+                    <h2>
+                        {mode === 'generate' && "Generate Image"}
+                        {mode === 'edit' && "Edit Image"}
+                        {mode === 'variation' && "Create Variation"}
+                    </h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                        {mode === 'generate' && "Describe the image you imagine."}
+                        {mode === 'edit' && "Upload an image and describe the part you want to change (PNG + Transparency)."}
+                        {mode === 'variation' && "Upload an image to create similar variations."}
+                        <br />Price: 10 Credits
+                    </p>
+
+                    <form onSubmit={handleGenerate}>
+
+                        {(mode === 'edit' || mode === 'variation') && (
+                            <div className="form-group">
+                                <label className="form-label">Upload Image</label>
+                                <input
+                                    type="file"
+                                    accept="image/png"
+                                    className="form-input"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                    required
+                                />
+                                <small style={{ color: 'var(--text-secondary)' }}>PNG format, max 4MB</small>
+                            </div>
+                        )}
+
+                        {mode !== 'variation' && (
+                            <div className="form-group">
+                                <label className="form-label">Description (Prompt)</label>
+                                <textarea
+                                    className="form-input"
+                                    rows="4"
+                                    placeholder={mode === 'edit' ? "Ex: Add a hat to the cat..." : "Ex: Red car flying in space..."}
+                                    value={prompt}
+                                    onChange={(e) => setPrompt(e.target.value)}
+                                    required
+                                ></textarea>
+                            </div>
+                        )}
+
+                        {error && <div className="error-msg">{error}</div>}
+
+                        <button type="submit" className="btn" disabled={loading}>
+                            {loading ? 'Processing...' : 'Start ✨'}
+                        </button>
+                    </form>
+                </div>
+
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🎨</div>
+                            <div>Magic is happening...</div>
+                        </div>
+                    ) : imageUrl ? (
+                        <div className="generated-image">
+                            <img src={imageUrl} alt="Generated AI" />
+                            <a href={imageUrl} target="_blank" rel="noreferrer" className="link-text" style={{ display: 'block', marginTop: '1rem', textAlign: 'center' }}>
+                                View Full Size
+                            </a>
+                        </div>
+                    ) : (
+                        <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}>🖼️</div>
+                            <div>Nothing generated yet</div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Dashboard;
