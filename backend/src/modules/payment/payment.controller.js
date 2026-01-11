@@ -1,99 +1,67 @@
+const axios = require("axios");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const stripe = process.env.STRIPE_SECRET_KEY ? require("stripe")(process.env.STRIPE_SECRET_KEY) : null;
+
+const PAYRIFF_SECRET_KEY = process.env.PAYRIFF_SECRET_KEY;
+const PAYRIFF_MERCHANT_ID = process.env.PAYRIFF_MERCHANT_ID;
 
 const createCheckoutSession = async (req, res) => {
     const userId = req.user.id;
     const { amount } = req.body; // Kredit miqdarı: 100, 500 və ya 1000
 
-    // Qiymət xəritəsi (Kredit -> Cents)
+    // Qiymət Paketləri (Kreditlər -> USD)
     const priceMap = {
-        100: 150,  // $1.50
-        500: 400,  // $4.00
-        1000: 699  // $6.99
+        100: 1.50,
+        500: 4.00,
+        1000: 6.99
     };
 
-    const priceInCents = priceMap[amount];
+    const price = priceMap[amount];
 
-    if (!priceInCents) {
+    if (!price) {
         return res.status(400).json({ error: "Invalid credit amount package" });
     }
 
-    if (!stripe) {
-        return res.status(500).json({ error: "Stripe is not configured" });
+    if (!PAYRIFF_SECRET_KEY || !PAYRIFF_MERCHANT_ID) {
+        return res.status(500).json({ error: "Payriff is not configured" });
     }
-    try {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (!user) return res.status(404).json({ error: "User not found" });
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            customer_email: user.email, // Email avtomatik doldurulur
-            line_items: [
-                {
-                    price_data: {
-                        currency: "usd",
-                        product_data: {
-                            name: `${amount / 10} Images Pack`,
-                        },
-                        unit_amount: priceInCents,
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: "payment",
-            success_url: `https://ai-studio-app-tau.vercel.app/?success=true`,
-            cancel_url: `https://ai-studio-app-tau.vercel.app/?canceled=true`,
-            metadata: {
-                userId: userId.toString(),
-                creditAmount: amount.toString(),
+    try {
+        const payload = {
+            body: {
+                amount: price,
+                currency: "USD",
+                description: `${amount / 10} Images Pack`,
+                language: "EN",
+                approveUrl: `https://ai-studio-app-tau.vercel.app/?success=true`,
+                cancelUrl: `https://ai-studio-app-tau.vercel.app/?canceled=true`,
+                declineUrl: `https://ai-studio-app-tau.vercel.app/?canceled=true`
             },
+            merchantId: PAYRIFF_MERCHANT_ID
+        };
+
+        const response = await axios.post('https://api.payriff.com/api/v2/createOrder', payload, {
+            headers: {
+                'Authorization': PAYRIFF_SECRET_KEY,
+                'Content-Type': 'application/json'
+            }
         });
 
-        res.json({ url: session.url });
+        if (response.data && response.data.payload && response.data.payload.paymentUrl) {
+            res.json({ url: response.data.payload.paymentUrl });
+        } else {
+            console.error("Payriff Error:", response.data);
+            res.status(500).json({ error: "Could not initiate Payriff payment" });
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "An error occurred while creating Stripe session" });
+        console.error("Payriff request failed:", error.response?.data || error.message);
+        res.status(500).json({ error: "An error occurred while communicating with Payriff" });
     }
 };
 
-// Webhook (Sadələşdirilmiş versiya - realda webhook imzasını yoxlamaq lazımdır)
-const webhook = async (req, res) => {
-    // Demo məqsədli webhook-u simulyasiya edirik (Stripe CLI olmadan test etmək üçün çətindir)
-    // Real deploymentdə bura Stripe-dan sorğu gəlir.
-    // Ancaq biz hələlik "success_url"-ə qayıdanda balansı artırmalıyıq? 
-    // Yox, təhlükəsizlik üçün webhook lazımdır.
-
-    // Stripe CLI olmadan localhost-da webhook test etmək çətindir.
-    // Ona görə də istifadəçi ödəniş edib qayıdanda sadə bir endpoint çağıracağıq (TƏHLÜKƏLİDİR amma demo üçün OK)
-    // Amma gəlin düzgün webhook strukturunu quraq.
-    res.sendStatus(200);
-};
-
-// Bu funksiya sadəcə demo üçün qalır, amma Stripe ilə əvəz olunacaq
-const topUp = async (req, res) => {
-    return res.status(400).json({ error: "Deprecated method. Use /create-checkout-session instead." });
-};
-
-// Uğurlu ödəniş təsdiqi (Demo üçün sadələşdirilmiş)
+// Bu funksiya sadəcə demo üçün qalır
 const confirmPayment = async (req, res) => {
-    const { userId, amount } = req.body;
-    // Real layihədə bu endpointi qorumaq lazımdır!
+    res.json({ message: "Secure payment validation should be done via webhook/callback" });
+};
 
-    await prisma.user.update({
-        where: { id: parseInt(userId) },
-        data: { balance: { increment: parseInt(amount) } }
-    });
-
-    await prisma.transaction.create({
-        data: {
-            userId: parseInt(userId),
-            type: "TOP_UP_STRIPE",
-            amount: parseInt(amount)
-        }
-    });
-
-    res.json({ success: true });
-}
-
-module.exports = { createCheckoutSession, topUp, confirmPayment };
+module.exports = { createCheckoutSession, confirmPayment };
