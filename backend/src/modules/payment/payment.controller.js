@@ -7,9 +7,8 @@ const PAYRIFF_MERCHANT_ID = process.env.PAYRIFF_MERCHANT_ID;
 
 const createCheckoutSession = async (req, res) => {
     const userId = req.user.id;
-    const { amount } = req.body; // Kredit miqdarı: 100, 500 və ya 1000
+    const { amount } = req.body; // Credit amount: 100, 500 or 1000
 
-    // Qiymət Paketləri (Kreditlər -> USD)
     const priceMap = {
         100: 0.99,
         500: 3.99,
@@ -27,15 +26,25 @@ const createCheckoutSession = async (req, res) => {
     }
 
     try {
+        // 1. Create a PENDING transaction in our DB first
+        const transaction = await prisma.transaction.create({
+            data: {
+                userId: userId,
+                type: "PURCHASE",
+                amount: amount,
+                status: "PENDING"
+            }
+        });
+
         const payload = {
             body: {
                 amount: price,
                 currency: "USD",
                 description: `${amount / 10} Images Pack`,
                 language: "EN",
-                approveUrl: `https://ai-studio-app-tau.vercel.app/?success=true`,
-                cancelUrl: `https://ai-studio-app-tau.vercel.app/?canceled=true`,
-                declineUrl: `https://ai-studio-app-tau.vercel.app/?canceled=true`
+                approveUrl: `${process.env.FRONTEND_URL || 'https://ai-studio-app-tau.vercel.app'}/?success=true`,
+                cancelUrl: `${process.env.FRONTEND_URL || 'https://ai-studio-app-tau.vercel.app'}/?canceled=true`,
+                declineUrl: `${process.env.FRONTEND_URL || 'https://ai-studio-app-tau.vercel.app'}/?canceled=true`
             },
             merchantId: PAYRIFF_MERCHANT_ID
         };
@@ -48,6 +57,12 @@ const createCheckoutSession = async (req, res) => {
         });
 
         if (response.data && response.data.payload && response.data.payload.paymentUrl) {
+            // Update transaction with internal ID (Order ID) from Payriff
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: { externalId: response.data.payload.orderId }
+            });
+
             res.json({ url: response.data.payload.paymentUrl });
         } else {
             console.error("Payriff Error:", response.data);
@@ -59,9 +74,45 @@ const createCheckoutSession = async (req, res) => {
     }
 };
 
-// Bu funksiya sadəcə demo üçün qalır
-const confirmPayment = async (req, res) => {
-    res.json({ message: "Secure payment validation should be done via webhook/callback" });
+const handleWebhook = async (req, res) => {
+    const { payload, signature } = req.body;
+    // In production, you should verify the signature here using PAYRIFF_SECRET_KEY
+
+    try {
+        const { orderId, orderStatus } = payload;
+
+        if (orderStatus === "APPROVED") {
+            // 1. Find the transaction
+            const transaction = await prisma.transaction.findUnique({
+                where: { externalId: orderId.toString() },
+                include: { user: true }
+            });
+
+            if (transaction && transaction.status === "PENDING") {
+                // 2. Update user balance and transaction status in a transaction
+                await prisma.$transaction([
+                    prisma.user.update({
+                        where: { id: transaction.userId },
+                        data: { balance: { increment: transaction.amount } }
+                    }),
+                    prisma.transaction.update({
+                        where: { id: transaction.id },
+                        data: { status: "COMPLETED" }
+                    })
+                ]);
+            }
+        } else if (orderStatus === "CANCELED" || orderStatus === "DECLINED") {
+            await prisma.transaction.updateMany({
+                where: { externalId: orderId.toString() },
+                data: { status: "FAILED" }
+            });
+        }
+
+        res.json({ status: "ACK" });
+    } catch (error) {
+        console.error("Webhook processing error:", error);
+        res.status(500).json({ error: "Webhook failed" });
+    }
 };
 
-module.exports = { createCheckoutSession, confirmPayment };
+module.exports = { createCheckoutSession, handleWebhook };

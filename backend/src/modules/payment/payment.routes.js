@@ -6,7 +6,7 @@ const authenticateToken = require("../../middlewares/auth.middleware");
 // Ödəniş linki yaratmaq
 router.post("/create-checkout-session", authenticateToken, paymentController.createCheckoutSession);
 
-// Demo təsdiqləmə (Webhook əvəzi)
-router.post("/confirm-payment", authenticateToken, paymentController.confirmPayment);
+// Payriff Webhook (called by Payriff, no user auth middleware)
+router.post("/webhook", paymentController.handleWebhook);
 
 module.exports = router;

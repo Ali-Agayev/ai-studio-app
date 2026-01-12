@@ -21,11 +21,13 @@ model User {
 }
 
 model Transaction {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  type      String
-  amount    Int
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  type       String   // e.g., "PURCHASE", "GENERATION"
+  amount     Int      // Credit amount
+  status     String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  externalId String?  @unique // Payriff Order ID
+  createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }
