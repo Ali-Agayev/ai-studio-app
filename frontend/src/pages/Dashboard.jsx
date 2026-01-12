@@ -169,7 +169,7 @@ const Dashboard = () => {
                             <div className="account-badge" style={{
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                 padding: '8px 15px',
-                                borderRadius: '12px',
+                                borderRadius: '50px',
                                 border: '1px solid rgba(59, 130, 246, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -182,9 +182,10 @@ const Dashboard = () => {
                                 backgroundColor: '#f1f5f9',
                                 color: '#475569',
                                 width: 'auto',
-                                padding: '8px 15px',
+                                padding: '8px 25px',
                                 fontSize: '0.9rem',
-                                border: '1px solid #e2e8f0'
+                                border: '1px solid #cbd5e1',
+                                borderRadius: '999px'
                             }}>Logout</button>
                         </div>
                     ) : (
@@ -214,24 +215,24 @@ const Dashboard = () => {
             <div className="grid-cols-2">
                 <div className="card">
                     {/* Mode Switcher */}
-                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1.5rem' }}>
                         <button
                             className={`btn ${mode === 'generate' ? '' : 'btn-outline'}`}
-                            style={{ flex: 1, backgroundColor: mode === 'generate' ? 'var(--accent-primary)' : 'transparent', color: mode === 'generate' ? 'white' : 'var(--text-primary)' }}
+                            style={{ flex: 1, backgroundColor: mode === 'generate' ? 'var(--accent-primary)' : 'transparent', color: mode === 'generate' ? 'white' : 'var(--text-primary)', borderRadius: '999px' }}
                             onClick={() => setMode('generate')}
                         >
                             Generate
                         </button>
                         <button
                             className={`btn ${mode === 'edit' ? '' : 'btn-outline'}`}
-                            style={{ flex: 1, backgroundColor: mode === 'edit' ? 'var(--accent-primary)' : 'transparent', color: mode === 'edit' ? 'white' : 'var(--text-primary)' }}
+                            style={{ flex: 1, backgroundColor: mode === 'edit' ? 'var(--accent-primary)' : 'transparent', color: mode === 'edit' ? 'white' : 'var(--text-primary)', borderRadius: '999px' }}
                             onClick={() => setMode('edit')}
                         >
                             Edit
                         </button>
                         <button
                             className={`btn ${mode === 'variation' ? '' : 'btn-outline'}`}
-                            style={{ flex: 1, backgroundColor: mode === 'variation' ? 'var(--accent-primary)' : 'transparent', color: mode === 'variation' ? 'white' : 'var(--text-primary)' }}
+                            style={{ flex: 1, backgroundColor: mode === 'variation' ? 'var(--accent-primary)' : 'transparent', color: mode === 'variation' ? 'white' : 'var(--text-primary)', borderRadius: '999px' }}
                             onClick={() => setMode('variation')}
                         >
                             Variation
