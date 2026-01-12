@@ -51,7 +51,7 @@ const Dashboard = () => {
         // Yoxlama: İstifadəçi giriş edibmi?
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/register');
+            navigate('/login');
             return;
         }
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
                 window.location.href = res.data.url;
             }
         } catch (err) {
-            alert("Error occurred: " + (err.response?.data?.error || err.message));
+            alert("Xəta baş verdi: " + (err.response?.data?.error || err.message));
         }
     };
 
@@ -77,7 +77,7 @@ const Dashboard = () => {
                     // Amma demo üçün URL-dən və ya session-dan təxmini məlumat ala bilərik.
                     // Hal-hazırda sadəcə balansı yeniləmək üçün profil sorğusu atırıq.
                     setBalance(userRes.data.balance);
-                    alert("Payment successful! Your balance has been updated. 🎉");
+                    alert("Ödəniş uğurludur! Balansınız yeniləndi. 🎉");
                     window.history.replaceState({}, document.title, "/");
                 } catch (e) {
                     console.error(e);
@@ -86,7 +86,7 @@ const Dashboard = () => {
             demoConfirm();
         }
         if (query.get("canceled")) {
-            alert("Payment canceled.");
+            alert("Ödəniş ləğv edildi.");
             window.history.replaceState({}, document.title, "/");
         }
     }, [navigate]);
@@ -98,7 +98,7 @@ const Dashboard = () => {
         // Yoxlama: İstifadəçi giriş edibmi?
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/register');
+            navigate('/login');
             return;
         }
 
@@ -115,7 +115,7 @@ const Dashboard = () => {
                 setBalance(res.data.remainingBalance);
             } else {
                 if (!file) {
-                    setError("Please upload an image");
+                    setError("Zəhmət olmasa şəkil yükləyin");
                     setLoading(false);
                     return;
                 }
@@ -137,7 +137,7 @@ const Dashboard = () => {
             }
 
         } catch (err) {
-            setError(err.response?.data?.error || 'An error occurred');
+            setError(err.response?.data?.error || 'Xəta baş verdi');
         } finally {
             setLoading(false);
         }
@@ -151,7 +151,7 @@ const Dashboard = () => {
                     {localStorage.getItem('token') && user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Logged in as</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Daxil olub</div>
                                 <div style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-primary)' }}>{user.email}</div>
                             </div>
                             <div className="account-badge" style={{
@@ -164,36 +164,35 @@ const Dashboard = () => {
                                 gap: '10px'
                             }}>
                                 <span style={{ fontSize: '1.2rem' }}>👤</span>
-                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(balance / 10)} Images</span>
+                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(balance / 10)} Şəkil</span>
                             </div>
                             <button onClick={handleLogout} className="btn" style={{
                                 backgroundColor: '#334155',
                                 width: 'auto',
                                 padding: '8px 15px',
                                 fontSize: '0.9rem'
-                            }}>Logout</button>
+                            }}>Çıxış</button>
                         </div>
                     ) : (
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button onClick={() => navigate('/login')} className="btn" style={{ backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>Login</button>
-                            <button onClick={() => navigate('/register')} className="btn">Register</button>
+                            <button onClick={() => navigate('/login')} className="btn">Google ilə Giriş</button>
                         </div>
                     )}
                 </div>
             </div>
 
             <div className="balance-card">
-                <h3>Your Balance</h3>
-                <div className="balance-amount">{Math.floor(balance / 10)} Images</div>
+                <h3>Balansınız</h3>
+                <div className="balance-amount">{Math.floor(balance / 10)} Şəkil</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
                     <button onClick={() => handleTopUp(100)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                        10 Images ($0.99)
+                        10 Şəkil (0.99 AZN)
                     </button>
                     <button onClick={() => handleTopUp(500)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                        50 Images ($3.99)
+                        50 Şəkil (3.99 AZN)
                     </button>
                     <button onClick={() => handleTopUp(1000)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '2px solid #ffd700' }}>
-                        100 Images ($6.99) 🔥
+                        100 Şəkil (6.99 AZN) 🔥
                     </button>
                 </div>
             </div>
@@ -207,44 +206,44 @@ const Dashboard = () => {
                             style={{ flex: 1, backgroundColor: mode === 'generate' ? 'var(--accent-primary)' : 'transparent', color: mode === 'generate' ? 'white' : 'var(--text-primary)' }}
                             onClick={() => setMode('generate')}
                         >
-                            Generate
+                            Yarat
                         </button>
                         <button
                             className={`btn ${mode === 'edit' ? '' : 'btn-outline'}`}
                             style={{ flex: 1, backgroundColor: mode === 'edit' ? 'var(--accent-primary)' : 'transparent', color: mode === 'edit' ? 'white' : 'var(--text-primary)' }}
                             onClick={() => setMode('edit')}
                         >
-                            Edit
+                            Düzəliş
                         </button>
                         <button
                             className={`btn ${mode === 'variation' ? '' : 'btn-outline'}`}
                             style={{ flex: 1, backgroundColor: mode === 'variation' ? 'var(--accent-primary)' : 'transparent', color: mode === 'variation' ? 'white' : 'var(--text-primary)' }}
                             onClick={() => setMode('variation')}
                         >
-                            Variation
+                            Variasiya
                         </button>
                     </div>
 
                     <h2>
-                        {mode === 'generate' && "Generate Image"}
-                        {mode === 'edit' && "Edit Image"}
-                        {mode === 'variation' && "Create Variation"}
+                        {mode === 'generate' && "Şəkil Yarat"}
+                        {mode === 'edit' && "Şəkilə Düzəliş"}
+                        {mode === 'variation' && "Variasiya Yarat"}
                     </h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                        {mode === 'generate' && "Describe the image you imagine."}
-                        {mode === 'edit' && "Upload an image and describe the part you want to change (PNG + Transparency)."}
-                        {mode === 'variation' && "Upload an image to create similar variations."}
-                        <br />Price: 1 Image
+                        {mode === 'generate' && "Xəyalınızdakı şəkli təsvir edin."}
+                        {mode === 'edit' && "Şəkil yükləyin və dəyişmək istədiyiniz hissəni təsvir edin."}
+                        {mode === 'variation' && "Bənzər variasiyalar yaratmaq üçün şəkil yükləyin."}
+                        <br />Qiymət: 1 Şəkil
                     </p>
 
                     <form onSubmit={handleGenerate}>
 
                         {(mode === 'edit' || mode === 'variation') && (
                             <div className="form-group">
-                                <label className="form-label">Upload Image</label>
+                                <label className="form-label">Şəkil Yüklə</label>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <label className="btn btn-outline" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
-                                        {file ? 'Change image' : 'Choose Image File'}
+                                        {file ? 'Şəkli dəyiş' : 'Şəkil faylı seçin'}
                                         <input
                                             type="file"
                                             accept="image/png"
@@ -255,7 +254,7 @@ const Dashboard = () => {
                                     </label>
                                     {file && (
                                         <div style={{ fontSize: '0.85rem', color: 'var(--success)', textAlign: 'center' }}>
-                                            Selected: {file.name}
+                                            Seçildi: {file.name}
                                         </div>
                                     )}
                                 </div>
@@ -265,11 +264,11 @@ const Dashboard = () => {
 
                         {mode !== 'variation' && (
                             <div className="form-group">
-                                <label className="form-label">Description (Prompt)</label>
+                                <label className="form-label">Təsvir (Prompt)</label>
                                 <textarea
                                     className="form-input"
                                     rows="4"
-                                    placeholder={mode === 'edit' ? "Ex: Add a hat to the cat..." : "Ex: Red car flying in space..."}
+                                    placeholder={mode === 'edit' ? "Misal: Pişiyə papaq əlavə et..." : "Misal: Kosmosda uçan qırmızı maşın..."}
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
                                     required
@@ -280,7 +279,7 @@ const Dashboard = () => {
                         {error && <div className="error-msg">{error}</div>}
 
                         <button type="submit" className="btn" disabled={loading}>
-                            {loading ? 'Processing...' : 'Start ✨'}
+                            {loading ? 'İşlənilir...' : 'Başla ✨'}
                         </button>
                     </form>
                 </div>
@@ -289,19 +288,19 @@ const Dashboard = () => {
                     {loading ? (
                         <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
                             <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🎨</div>
-                            <div>Magic is happening...</div>
+                            <div>Möcüzə baş verir...</div>
                         </div>
                     ) : imageUrl ? (
                         <div className="generated-image">
                             <img src={imageUrl} alt="Generated AI" />
                             <a href={imageUrl} target="_blank" rel="noreferrer" className="link-text" style={{ display: 'block', marginTop: '1rem', textAlign: 'center' }}>
-                                View Full Size
+                                Tam ölçüdə bax
                             </a>
                         </div>
                     ) : (
                         <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
                             <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}>🖼️</div>
-                            <div>Nothing generated yet</div>
+                            <div>Hələ heç nə yaradılmayıb</div>
                         </div>
                     )}
                 </div>
