@@ -24,6 +24,10 @@ app.use("/user", userRoutes);
 const paymentRoutes = require("./modules/payment/payment.routes");
 app.use("/payment", paymentRoutes);
 
+// Admin routes
+const adminRoutes = require("./modules/admin/admin.routes");
+app.use("/admin", adminRoutes);
+
 app.get("/", (req, res) => {
   res.send("Backend is running ✅");
 });

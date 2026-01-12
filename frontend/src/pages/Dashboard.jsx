@@ -178,6 +178,15 @@ const Dashboard = () => {
                                 <span style={{ fontSize: '1.2rem' }}>👤</span>
                                 <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(balance / 10)} Images</span>
                             </div>
+                            {user.role === 'ADMIN' && (
+                                <button onClick={() => navigate('/admin')} className="btn" style={{
+                                    backgroundColor: '#4f46e5',
+                                    color: 'white',
+                                    width: 'auto',
+                                    padding: '8px 20px',
+                                    fontSize: '0.9rem'
+                                }}>Admin Panel</button>
+                            )}
                             <button onClick={handleLogout} className="btn" style={{
                                 backgroundColor: '#f1f5f9',
                                 color: '#475569',
