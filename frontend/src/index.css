@@ -1,12 +1,15 @@
 :root {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f1f5f9;
+  /* Slightly darker slate for background */
   --bg-secondary: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --accent-primary: #6366f1;
-  /* Indigo */
-  --accent-hover: #4f46e5;
-  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  /* Much darker for better contrast */
+  --accent-primary: #4f46e5;
+  /* Sharper indigo */
+  --accent-hover: #4338ca;
+  --border-color: #cbd5e1;
+  /* Visible border */
   --error: #ef4444;
   --success: #10b981;
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -66,19 +69,20 @@ button {
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   color: var(--text-primary);
   font-size: 1rem;
   box-sizing: border-box;
-  /* Important for padding */
+  transition: all 0.2s ease;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background-color: #ffffff;
 }
 
 .btn {

@@ -27,20 +27,18 @@ const Login = () => {
 
     return (
         <div className="auth-container" style={{
-            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            background: 'linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)',
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
         }}>
             <div className="card" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                 padding: '3rem 2.5rem',
-                borderRadius: '24px',
+                borderRadius: '20px',
                 width: '100%',
                 maxWidth: '420px',
                 textAlign: 'center'
@@ -48,7 +46,7 @@ const Login = () => {
                 <div style={{
                     width: '64px',
                     height: '64px',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    background: 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
                     borderRadius: '16px',
                     margin: '0 auto 1.5rem',
                     display: 'flex',
@@ -57,37 +55,37 @@ const Login = () => {
                     fontSize: '1.5rem',
                     fontWeight: 'bold',
                     color: 'white',
-                    boxShadow: '0 8px 16px rgba(99, 102, 241, 0.2)'
+                    boxShadow: '0 8px 16px rgba(51, 65, 85, 0.2)'
                 }}>
                     A
                 </div>
 
                 <h2 style={{
-                    fontSize: '2rem',
-                    fontWeight: '700',
+                    fontSize: '1.8rem',
+                    fontWeight: '800',
                     marginBottom: '0.75rem',
-                    color: '#0f172a',
+                    color: '#1e293b',
                     letterSpacing: '-0.025em'
                 }}>
-                    Welcome to AI Studio
+                    AI Studio
                 </h2>
                 <p style={{
-                    color: '#64748b',
+                    color: '#475569',
                     marginBottom: '2.5rem',
                     fontSize: '1rem',
                     lineHeight: '1.5'
                 }}>
-                    The future of creativity starts here.<br />
-                    Sign in to continue.
+                    Professional AI Image Workspace.<br />
+                    Please sign in to continue.
                 </p>
 
                 {error && (
                     <div style={{
-                        backgroundColor: 'rgba(239, 68, 68, 0.05)',
-                        color: '#ef4444',
+                        backgroundColor: '#fef2f2',
+                        color: '#b91c1c',
                         padding: '0.75rem',
                         borderRadius: '12px',
-                        border: '1px solid rgba(239, 68, 68, 0.1)',
+                        border: '1px solid #fee2e2',
                         marginBottom: '1.5rem',
                         fontSize: '0.9rem'
                     }}>
@@ -98,30 +96,34 @@ const Login = () => {
                 <div style={{
                     display: 'flex',
                     justifyContent: 'center',
-                    marginBottom: '1rem'
+                    marginBottom: '1.5rem',
+                    padding: '1.5rem',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '16px',
+                    border: '1px solid #f1f5f9'
                 }}>
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
                         onError={handleGoogleError}
                         useOneTap
-                        theme="outline"
+                        theme="filled_blue"
                         shape="pill"
                         locale="en"
                         size="large"
-                        width="100%"
+                        width="300"
                     />
                 </div>
 
                 <div style={{
                     fontSize: '0.875rem',
-                    color: '#94a3b8',
+                    color: '#64748b',
                     lineHeight: '1.6',
-                    marginTop: '2rem',
+                    marginTop: '1.5rem',
                     paddingTop: '1.5rem',
                     borderTop: '1px solid #f1f5f9'
                 }}>
-                    By continuing, you'll be automatically registered if you don't have an account.<br />
-                    <span style={{ opacity: 0.8 }}>Safe & Secure Google Authentication</span>
+                    New users automatically get 1 free credit.<br />
+                    <strong style={{ color: '#475569' }}>Secure Google Authentication</strong>
                 </div>
             </div>
         </div>
