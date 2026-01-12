@@ -44,20 +44,19 @@ const Login = () => {
                 textAlign: 'center'
             }}>
                 <div style={{
-                    width: '64px',
-                    height: '64px',
-                    background: 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
-                    borderRadius: '16px',
+                    width: '72px',
+                    height: '72px',
                     margin: '0 auto 1.5rem',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                    border: '3px solid #ffffff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.5rem',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    boxShadow: '0 8px 16px rgba(51, 65, 85, 0.2)'
+                    backgroundColor: '#ffffff'
                 }}>
-                    A
+                    <img src="/favicon.png" alt="AI Studio Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
 
                 <h2 style={{

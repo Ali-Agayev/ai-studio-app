@@ -145,8 +145,20 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-layout">
-            <div className="header">
-                <h1>AI Studio</h1>
+            <div className="header" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '2px solid var(--accent-primary)',
+                        flexShrink: 0
+                    }}>
+                        <img src="/favicon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <h1 style={{ margin: 0, fontSize: '1.5rem' }}>AI Studio</h1>
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     {localStorage.getItem('token') && user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
