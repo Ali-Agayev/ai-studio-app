@@ -76,4 +76,19 @@ const updateUserRole = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, getStats, deleteUser, updateUserRole };
+const giftCredits = async (req, res) => {
+    const { id } = req.params;
+    const { amount } = req.body;
+    try {
+        await prisma.user.update({
+            where: { id: parseInt(id) },
+            data: { balance: { increment: parseInt(amount) } }
+        });
+        res.json({ message: `${amount} kredit uğurla əlavə edildi ✅` });
+    } catch (error) {
+        console.error("Admin: giftCredits error:", error);
+        res.status(500).json({ error: "Balansı artırmaq mümkün olmadı" });
+    }
+};
+
+module.exports = { getUsers, getStats, deleteUser, updateUserRole, giftCredits };

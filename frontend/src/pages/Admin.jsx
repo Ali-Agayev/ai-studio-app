@@ -80,6 +80,18 @@ const Admin = () => {
         u.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleGiftCredits = async (user) => {
+        const amount = window.prompt(`${user.email} istifadəçisinə neçə kredit əlavə etmək istəyirsiniz?`, "10");
+        if (!amount || isNaN(amount)) return;
+        try {
+            await axios.post(`/admin/users/${user.id}/gift-credits`, { amount: parseInt(amount) }, { headers: getHeaders() });
+            setUsers(users.map(u => u.id === user.id ? { ...u, balance: u.balance + parseInt(amount) } : u));
+            alert("Kreditlər əlavə edildi.");
+        } catch (err) {
+            alert("Xəta baş verdi.");
+        }
+    };
+
     if (loading) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f1f5f9' }}>
             <div style={{ color: '#475569', fontSize: '1.2rem' }}>Admin Panel yüklənir...</div>
@@ -211,6 +223,13 @@ const Admin = () => {
                                         </td>
                                         <td style={{ padding: '1rem', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                <button
+                                                    onClick={() => handleGiftCredits(u)}
+                                                    style={{ background: '#dcfce7', color: '#166534', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    title="Kredit Hədiyyə Et"
+                                                >
+                                                    Kredit Artır
+                                                </button>
                                                 <button
                                                     onClick={() => handleRoleToggle(u)}
                                                     style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}

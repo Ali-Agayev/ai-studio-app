@@ -7,5 +7,6 @@ router.get("/users", authenticateToken, isAdmin, adminController.getUsers);
 router.get("/stats", authenticateToken, isAdmin, adminController.getStats);
 router.delete("/users/:id", authenticateToken, isAdmin, adminController.deleteUser);
 router.patch("/users/:id/role", authenticateToken, isAdmin, adminController.updateUserRole);
+router.post("/users/:id/gift-credits", authenticateToken, isAdmin, adminController.giftCredits);
 
 module.exports = router;
