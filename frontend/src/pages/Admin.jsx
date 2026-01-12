@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Admin = () => {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState(null);
+    const [adminProfile, setAdminProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,12 +18,14 @@ const Admin = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [usersRes, statsRes] = await Promise.all([
+                const [usersRes, statsRes, adminRes] = await Promise.all([
                     axios.get('/admin/users', { headers: getHeaders() }),
-                    axios.get('/admin/stats', { headers: getHeaders() })
+                    axios.get('/admin/stats', { headers: getHeaders() }),
+                    axios.get('/user/me', { headers: getHeaders() })
                 ]);
                 setUsers(usersRes.data);
                 setStats(statsRes.data);
+                setAdminProfile(adminRes.data);
             } catch (err) {
                 console.error("Admin fetch error:", err);
                 if (err.response?.status === 403) {
@@ -58,7 +61,23 @@ const Admin = () => {
                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>A</div>
                         <h1 style={{ margin: 0, fontSize: '1.8rem', color: '#1e293b' }}>Admin Panel</h1>
                     </div>
-                    <button onClick={() => navigate('/')} className="btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'white', color: '#475569', border: '1px solid #cbd5e1' }}>Ana Səhifə</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        {adminProfile && (
+                            <div className="account-badge" style={{
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                padding: '8px 15px',
+                                borderRadius: '50px',
+                                border: '1px solid rgba(59, 130, 246, 0.2)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <span style={{ fontSize: '1.2rem' }}>👤</span>
+                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(adminProfile.balance / 10)} Images</span>
+                            </div>
+                        )}
+                        <button onClick={() => navigate('/')} className="btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'white', color: '#475569', border: '1px solid #cbd5e1' }}>Ana Səhifə</button>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}
