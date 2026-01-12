@@ -6,6 +6,8 @@ const Admin = () => {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState(null);
     const [adminProfile, setAdminProfile] = useState(null);
+    const [promoteEmail, setPromoteEmail] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -51,8 +53,8 @@ const Admin = () => {
         }
     };
 
-    const handleRoleToggle = async (user) => {
-        const newRole = user.role === 'ADMIN' ? 'USER' : 'ADMIN';
+    const handleRoleToggle = async (user, specificRole) => {
+        const newRole = specificRole || (user.role === 'ADMIN' ? 'USER' : 'ADMIN');
         if (!window.confirm(`İstifadəçinin rolunu ${newRole} olaraq dəyişmək istəyirsiniz?`)) return;
         try {
             await axios.patch(`/admin/users/${user.id}/role`, { role: newRole }, { headers: getHeaders() });
@@ -62,6 +64,21 @@ const Admin = () => {
             alert("Rolu dəyişmək mümkün olmadı.");
         }
     };
+
+    const handlePromoteByEmail = async (e) => {
+        e.preventDefault();
+        const user = users.find(u => u.email.toLowerCase() === promoteEmail.toLowerCase());
+        if (!user) {
+            alert("Bu email ilə istifadəçi siyahıda tapılmadı. İstifadəçi ən azı bir dəfə sayta daxil olmalıdır.");
+            return;
+        }
+        await handleRoleToggle(user, 'ADMIN');
+        setPromoteEmail('');
+    };
+
+    const filteredUsers = users.filter(u =>
+        u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     if (loading) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f1f5f9' }}>
@@ -119,10 +136,47 @@ const Admin = () => {
                     </div>
                 </div>
 
+                {/* Promote Admin Form */}
+                <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '300px' }}>
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem' }}>Yeni Admin Əlavə Et</h3>
+                        <form onSubmit={handlePromoteByEmail} style={{ display: 'flex', gap: '10px' }}>
+                            <input
+                                type="email"
+                                placeholder="İstifadəçi emaili"
+                                value={promoteEmail}
+                                onChange={(e) => setPromoteEmail(e.target.value)}
+                                style={{
+                                    flex: 1,
+                                    padding: '10px 15px',
+                                    borderRadius: '50px',
+                                    border: '1px solid #cbd5e1',
+                                    outline: 'none'
+                                }}
+                                required
+                            />
+                            <button type="submit" className="btn" style={{ width: 'auto', padding: '10px 25px' }}>Admin Et</button>
+                        </form>
+                    </div>
+                </div>
+
                 {/* Users Table */}
                 <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
+                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
                         <h2 style={{ fontSize: '1.2rem', margin: 0 }}>İstifadəçilər</h2>
+                        <input
+                            type="text"
+                            placeholder="Email ilə axtar..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                padding: '8px 15px',
+                                borderRadius: '50px',
+                                border: '1px solid #cbd5e1',
+                                fontSize: '0.9rem',
+                                width: '250px'
+                            }}
+                        />
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -136,7 +190,7 @@ const Admin = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {users.map(u => (
+                                {filteredUsers.map(u => (
                                     <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                                         <td style={{ padding: '1rem', fontWeight: '500' }}>{u.email}</td>
                                         <td style={{ padding: '1rem' }}>{u.balance}</td>
