@@ -176,7 +176,7 @@ const Dashboard = () => {
                                 gap: '10px'
                             }}>
                                 <span style={{ fontSize: '1.2rem' }}>👤</span>
-                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{balance} Credits</span>
+                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{balance} {balance === 1 ? 'Image' : 'Images'}</span>
                             </div>
                             {user.role === 'ADMIN' && (
                                 <button onClick={() => navigate('/admin')} className="btn" style={{

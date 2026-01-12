@@ -125,7 +125,7 @@ const Admin = () => {
                                 gap: '10px'
                             }}>
                                 <span style={{ fontSize: '1.2rem' }}>👤</span>
-                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{adminProfile.balance} Credits</span>
+                                <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{adminProfile.balance} {adminProfile.balance === 1 ? 'Image' : 'Images'}</span>
                             </div>
                         )}
                         <button onClick={() => navigate('/')} className="btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'white', color: '#475569', border: '1px solid #cbd5e1' }}>Ana Səhifə</button>
