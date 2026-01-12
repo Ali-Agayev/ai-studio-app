@@ -167,10 +167,12 @@ const Dashboard = () => {
                                 <span style={{ fontWeight: '600', color: 'var(--accent-primary)' }}>{Math.floor(balance / 10)} Images</span>
                             </div>
                             <button onClick={handleLogout} className="btn" style={{
-                                backgroundColor: '#334155',
+                                backgroundColor: '#f1f5f9',
+                                color: '#475569',
                                 width: 'auto',
                                 padding: '8px 15px',
-                                fontSize: '0.9rem'
+                                fontSize: '0.9rem',
+                                border: '1px solid #e2e8f0'
                             }}>Logout</button>
                         </div>
                     ) : (

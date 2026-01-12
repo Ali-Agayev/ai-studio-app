@@ -1,11 +1,12 @@
 :root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
   --accent-primary: #6366f1;
   /* Indigo */
   --accent-hover: #4f46e5;
+  --border-color: #e2e8f0;
   --error: #ef4444;
   --success: #10b981;
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
