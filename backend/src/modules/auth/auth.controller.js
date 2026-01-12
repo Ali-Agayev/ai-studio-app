@@ -2,6 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { OAuth2Client } = require("google-auth-library");
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const prisma = new PrismaClient();
 
@@ -118,4 +121,33 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword };
+const googleLogin = async (req, res) => {
+  const { idToken } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { email } = ticket.getPayload();
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // Yeni istifadəçi yaradılır
+      user = await prisma.user.create({
+        data: {
+          email,
+          balance: 10 // Yeni istifadəçiyə hədiyyə balans (istəyə bağlı)
+        }
+      });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    res.json({ token, user: { id: user.id, email: user.email, balance: user.balance } });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(401).json({ error: "Invalid Google token" });
+  }
+};
+
+module.exports = { register, login, forgotPassword, resetPassword, googleLogin };
