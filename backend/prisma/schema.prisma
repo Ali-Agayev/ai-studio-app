@@ -17,6 +17,7 @@ model User {
   role      String   @default("USER")
   resetCode String?
   resetCodeExpires DateTime?
+  lastLogin    DateTime?
   createdAt DateTime @default(now())
   transactions Transaction[]
 }

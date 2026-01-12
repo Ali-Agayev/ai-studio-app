@@ -9,6 +9,7 @@ const getUsers = async (req, res) => {
                 email: true,
                 balance: true,
                 role: true,
+                lastLogin: true,
                 createdAt: true,
             },
             orderBy: { createdAt: "desc" },

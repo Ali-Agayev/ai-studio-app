@@ -46,6 +46,12 @@ const login = async (req, res) => {
       return res.status(500).json({ error: "Server configuration error (JWT)" });
     }
 
+    // Update lastLogin
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    });
+
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.json({ token, user: { id: user.id, email: user.email, balance: user.balance, role: user.role } });
   } catch (error) {
@@ -141,6 +147,12 @@ const googleLogin = async (req, res) => {
         }
       });
     }
+
+    // Update lastLogin
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    });
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.json({ token, user: { id: user.id, email: user.email, balance: user.balance, role: user.role } });

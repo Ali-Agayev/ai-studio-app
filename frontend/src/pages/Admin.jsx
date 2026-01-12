@@ -197,6 +197,7 @@ const Admin = () => {
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Email</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Balans</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Rol</th>
+                                    <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Son Giriş</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Qeydiyyat Tarixi</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600', textAlign: 'right' }}>Əməliyyatlar</th>
                                 </tr>
@@ -217,6 +218,9 @@ const Admin = () => {
                                             }}>
                                                 {u.role}
                                             </span>
+                                        </td>
+                                        <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>
+                                            {u.lastLogin ? new Date(u.lastLogin).toLocaleString() : 'Giriş yoxdur'}
                                         </td>
                                         <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>
                                             {new Date(u.createdAt).toLocaleDateString()}
