@@ -143,7 +143,7 @@ const googleLogin = async (req, res) => {
       user = await prisma.user.create({
         data: {
           email,
-          balance: 10 // Yeni istifadəçiyə hədiyyə balans (istəyə bağlı)
+          balance: 1 // Yeni istifadəçiyə hədiyyə balans
         }
       });
     }

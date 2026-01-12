@@ -3,7 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const fs = require('fs');
 const prisma = new PrismaClient();
 
-const IMAGE_COST = 10; // 10 credits per image
+const IMAGE_COST = 1; // 1 credit per image
 
 const generateImage = async (req, res) => {
     try {
