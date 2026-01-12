@@ -26,16 +26,45 @@ const Login = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="card">
-                <h2 className="text-center" style={{ marginBottom: '1rem' }}>Welcome Back</h2>
-                <p className="text-center" style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                    Please sign in with your Google account to continue
+        <div className="auth-container" style={{
+            background: 'radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+            minHeight: '100vh'
+        }}>
+            <div className="card" style={{
+                backdropFilter: 'blur(10px)',
+                backgroundColor: 'rgba(30, 41, 59, 0.7)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                textAlign: 'center'
+            }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✨</div>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    Join AI Studio
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', fontSize: '0.95rem' }}>
+                    Sign in or create an account with a single click
                 </p>
 
-                {error && <div className="error-msg">{error}</div>}
+                {error && (
+                    <div className="error-msg" style={{
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(239, 68, 68, 0.2)'
+                    }}>
+                        {error}
+                    </div>
+                )}
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: '1.5rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    marginBottom: '2rem'
+                }}>
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
                         onError={handleGoogleError}
@@ -43,11 +72,15 @@ const Login = () => {
                         theme="filled_blue"
                         shape="pill"
                         locale="en"
+                        size="large"
+                        text="continue_with"
                     />
                 </div>
 
-                <div className="text-center mt-5" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    By signing in, you agree to our Terms and Conditions.
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                    By continuing, you'll be automatically registered if you don't have an account.
+                    <br />
+                    <span style={{ opacity: 0.5 }}>Safe & Secure Google Login</span>
                 </div>
             </div>
         </div>

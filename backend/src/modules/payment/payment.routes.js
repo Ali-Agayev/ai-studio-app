@@ -3,10 +3,10 @@ const router = express.Router();
 const paymentController = require("./payment.controller");
 const authenticateToken = require("../../middlewares/auth.middleware");
 
-// Ödəniş linki yaratmaq
+// Create payment session
 router.post("/create-checkout-session", authenticateToken, paymentController.createCheckoutSession);
 
-// Payriff Webhook (called by Payriff, no user auth middleware)
+// Webhook for payment confirmation
 router.post("/webhook", paymentController.handleWebhook);
 
 module.exports = router;
