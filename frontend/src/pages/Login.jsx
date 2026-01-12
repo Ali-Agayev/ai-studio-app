@@ -42,6 +42,7 @@ const Login = () => {
                         useOneTap
                         theme="filled_blue"
                         shape="pill"
+                        locale="en"
                     />
                 </div>
 
