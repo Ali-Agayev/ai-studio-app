@@ -155,7 +155,7 @@ const Dashboard = () => {
                         border: '2px solid var(--accent-primary)',
                         flexShrink: 0
                     }}>
-                        <img src="/favicon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src="/favicon.svg" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <h1 style={{ margin: 0, fontSize: '1.5rem' }}>AI Studio</h1>
                 </div>

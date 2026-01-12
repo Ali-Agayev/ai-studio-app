@@ -56,7 +56,7 @@ const Login = () => {
                     justifyContent: 'center',
                     backgroundColor: '#ffffff'
                 }}>
-                    <img src="/favicon.png" alt="AI Studio Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src="/favicon.svg" alt="AI Studio Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
 
                 <h2 style={{
