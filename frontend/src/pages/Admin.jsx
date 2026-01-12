@@ -225,21 +225,21 @@ const Admin = () => {
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                                 <button
                                                     onClick={() => handleGiftCredits(u)}
-                                                    style={{ background: '#dcfce7', color: '#166534', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    style={{ background: '#dcfce7', color: '#166534', border: 'none', borderRadius: '50px', padding: '6px 15px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                                                     title="Kredit Hədiyyə Et"
                                                 >
                                                     Kredit Artır
                                                 </button>
                                                 <button
                                                     onClick={() => handleRoleToggle(u)}
-                                                    style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: '50px', padding: '6px 15px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '500' }}
                                                     title="Rolunu dəyiş"
                                                 >
                                                     {u.role === 'ADMIN' ? 'Adminlikdən çıxat' : 'Admin et'}
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteUser(u.id, u.email)}
-                                                    style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '50px', padding: '6px 15px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                                                     title="Sil"
                                                 >
                                                     Sil
