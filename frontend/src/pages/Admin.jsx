@@ -40,6 +40,29 @@ const Admin = () => {
         fetchData();
     }, []);
 
+    const handleDeleteUser = async (id, email) => {
+        if (!window.confirm(`${email} istifadəçisini sistemdən silmək istədiyinizə əminsiniz?`)) return;
+        try {
+            await axios.delete(`/admin/users/${id}`, { headers: getHeaders() });
+            setUsers(users.filter(u => u.id !== id));
+            alert("İstifadəçi silindi.");
+        } catch (err) {
+            alert("Silmək mümkün olmadı.");
+        }
+    };
+
+    const handleRoleToggle = async (user) => {
+        const newRole = user.role === 'ADMIN' ? 'USER' : 'ADMIN';
+        if (!window.confirm(`İstifadəçinin rolunu ${newRole} olaraq dəyişmək istəyirsiniz?`)) return;
+        try {
+            await axios.patch(`/admin/users/${user.id}/role`, { role: newRole }, { headers: getHeaders() });
+            setUsers(users.map(u => u.id === user.id ? { ...u, role: newRole } : u));
+            alert("Rol yeniləndi.");
+        } catch (err) {
+            alert("Rolu dəyişmək mümkün olmadı.");
+        }
+    };
+
     if (loading) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f1f5f9' }}>
             <div style={{ color: '#475569', fontSize: '1.2rem' }}>Admin Panel yüklənir...</div>
@@ -109,6 +132,7 @@ const Admin = () => {
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Balans</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Rol</th>
                                     <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600' }}>Qeydiyyat Tarixi</th>
+                                    <th style={{ padding: '1rem', color: '#64748b', fontWeight: '600', textAlign: 'right' }}>Əməliyyatlar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -130,6 +154,24 @@ const Admin = () => {
                                         </td>
                                         <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>
                                             {new Date(u.createdAt).toLocaleDateString()}
+                                        </td>
+                                        <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                <button
+                                                    onClick={() => handleRoleToggle(u)}
+                                                    style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    title="Rolunu dəyiş"
+                                                >
+                                                    {u.role === 'ADMIN' ? 'Adminlikdən çıxat' : 'Admin et'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteUser(u.id, u.email)}
+                                                    style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                    title="Sil"
+                                                >
+                                                    Sil
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

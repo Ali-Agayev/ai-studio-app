@@ -41,4 +41,39 @@ const getStats = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, getStats };
+const deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Delete transactions first
+        await prisma.transaction.deleteMany({
+            where: { userId: parseInt(id) },
+        });
+
+        // Delete user
+        await prisma.user.delete({
+            where: { id: parseInt(id) },
+        });
+
+        res.json({ message: "İstifadəçi uğurla silindi ✅" });
+    } catch (error) {
+        console.error("Admin: deleteUser error:", error);
+        res.status(500).json({ error: "İstifadəçini silmək mümkün olmadı" });
+    }
+};
+
+const updateUserRole = async (req, res) => {
+    const { id } = req.params;
+    const { role } = req.body;
+    try {
+        await prisma.user.update({
+            where: { id: parseInt(id) },
+            data: { role }
+        });
+        res.json({ message: `İstifadəçinin rolu ${role} olaraq yeniləndi ✅` });
+    } catch (error) {
+        console.error("Admin: updateUserRole error:", error);
+        res.status(500).json({ error: "Rolu yeniləmək mümkün olmadı" });
+    }
+};
+
+module.exports = { getUsers, getStats, deleteUser, updateUserRole };
