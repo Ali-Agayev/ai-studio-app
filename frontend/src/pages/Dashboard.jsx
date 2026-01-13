@@ -46,17 +46,25 @@ const Dashboard = () => {
         }
     }, []);
 
-    // Stripe/Payriff Ödəniş
+    // Stripe ödəniş: göndərilən payload backend-in gözlədiyi formada olmalıdır
     const handleTopUp = async (creditAmount) => {
-        // Yoxlama: İstifadəçi giriş edibmi?
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/login');
             return;
         }
 
+        // Mapping: frontend passes internal credit units (e.g. 100 => 10 images)
+        // amountCents must be price in cents that Stripe expects.
+        const priceMap = { 100: 99, 500: 399, 1000: 699 };
+        const amountCents = priceMap[creditAmount];
+        if (!amountCents) {
+            alert('Invalid top-up option');
+            return;
+        }
+
         try {
-            const res = await axios.post('/payment/create-checkout-session', { amount: creditAmount }, { headers: getHeaders() });
+            const res = await axios.post('/payment/create-checkout-session', { amountCents, credits: creditAmount }, { headers: getHeaders() });
             if (res.data.url) {
                 window.location.href = res.data.url;
             }
