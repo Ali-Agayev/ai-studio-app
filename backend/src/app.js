@@ -7,6 +7,11 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+
+// Payoneer webhook: parse raw body for signature validation
+const paymentController = require("./modules/payment/payment.controller");
+app.post("/payment/webhook", express.raw({ type: "application/json" }), paymentController.handleWebhook);
+
 app.use(express.json());
 
 // Auth routes
