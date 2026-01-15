@@ -56,7 +56,7 @@ const Dashboard = () => {
 
         // Mapping: frontend passes internal credit units (e.g. 100 => 10 images)
         // amountCents must be price in cents that Stripe expects.
-        const priceMap = { 100: 99, 500: 399, 1000: 699 };
+        const priceMap = { 10: 10, 100: 99, 500: 399, 1000: 699 };
         const amountCents = priceMap[creditAmount];
         if (!amountCents) {
             alert('Invalid top-up option');
@@ -217,6 +217,9 @@ const Dashboard = () => {
                 <h3>Your Balance</h3>
                 <div className="balance-amount">{Math.floor(balance / 10)} Images</div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
+                    <button onClick={() => handleTopUp(10)} className="btn" style={{ backgroundColor: '#fef3c7', color: '#92400e', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem', border: '1px solid #f59e0b' }}>
+                        1 Image (TEST - $0.10)
+                    </button>
                     <button onClick={() => handleTopUp(100)} className="btn" style={{ backgroundColor: 'white', color: 'var(--accent-primary)', width: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
                         10 Images ($0.99)
                     </button>
