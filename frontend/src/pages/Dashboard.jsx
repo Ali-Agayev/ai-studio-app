@@ -165,7 +165,7 @@ const Dashboard = () => {
                     }}>
                         <img src="/favicon.svg" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
-                    <h1 style={{ margin: 0, fontSize: '1.5rem' }}>AI Studio</h1>
+                    <h1 style={{ margin: 0, fontSize: '1.5rem' }}>AI Studio (LIVE)</h1>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     {localStorage.getItem('token') && user ? (
