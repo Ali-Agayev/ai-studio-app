@@ -49,29 +49,42 @@ const Dashboard = () => {
 
     // Initialize Paddle
     useEffect(() => {
-        if (window.Paddle) {
-            window.Paddle.Environment.set(import.meta.env.VITE_PADDLE_ENV || 'sandbox');
-            window.Paddle.Initialize({
-                token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN,
-                eventCallback: function (data) {
-                    // Update balance if purchase completed successfully on client side (optimistic)
-                    // or just wait for webhook.
-                    if (data.name === 'checkout.completed') {
-                        console.log('Checkout completed', data);
-                        alert("Payment successful! Your balance will be updated momentarily. 🎉");
-
-                        // Refresh balance after short delay to allow webhook to process
-                        setTimeout(async () => {
-                            try {
-                                const res = await axios.get('/user/me', { headers: getHeaders() });
-                                setBalance(res.data.balance);
-                            } catch (e) { console.error(e) }
-                        }, 2000);
-                    }
+        try {
+            if (window.Paddle) {
+                // Sadece token placeholder-dən fərqlidirsə başlat
+                const token = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+                if (!token || token.includes('your_paddle_client_token_here')) {
+                    console.warn("Paddle Client Token is missing or invalid (placeholder detected). Skipping initialization.");
+                    return;
                 }
-            });
+
+                window.Paddle.Environment.set(import.meta.env.VITE_PADDLE_ENV || 'sandbox');
+                window.Paddle.Initialize({
+                    token: token,
+                    eventCallback: function (data) {
+                        try {
+                            if (data.name === 'checkout.completed') {
+                                console.log('Checkout completed', data);
+                                alert("Payment successful! Your balance will be updated momentarily. 🎉");
+
+                                setTimeout(async () => {
+                                    try {
+                                        const res = await axios.get('/user/me', { headers: getHeaders() });
+                                        setBalance(res.data.balance);
+                                    } catch (e) { console.error(e) }
+                                }, 2000);
+                            }
+                        } catch (err) {
+                            console.error("Paddle event error:", err);
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Paddle initialization failed:", error);
         }
     }, []);
+
 
     // Paddle Checkout
     const handleTopUp = (creditAmount) => {
