@@ -47,58 +47,72 @@ const Dashboard = () => {
         }
     }, []);
 
-    // Stripe ödəniş: göndərilən payload backend-in gözlədiyi formada olmalıdır
-    const handleTopUp = async (creditAmount) => {
+    // Initialize Paddle
+    useEffect(() => {
+        if (window.Paddle) {
+            window.Paddle.Environment.set(import.meta.env.VITE_PADDLE_ENV || 'sandbox');
+            window.Paddle.Initialize({
+                token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN,
+                eventCallback: function (data) {
+                    // Update balance if purchase completed successfully on client side (optimistic)
+                    // or just wait for webhook.
+                    if (data.name === 'checkout.completed') {
+                        console.log('Checkout completed', data);
+                        alert("Payment successful! Your balance will be updated momentarily. 🎉");
+
+                        // Refresh balance after short delay to allow webhook to process
+                        setTimeout(async () => {
+                            try {
+                                const res = await axios.get('/user/me', { headers: getHeaders() });
+                                setBalance(res.data.balance);
+                            } catch (e) { console.error(e) }
+                        }, 2000);
+                    }
+                }
+            });
+        }
+    }, []);
+
+    // Paddle Checkout
+    const handleTopUp = (creditAmount) => {
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/login');
             return;
         }
 
-        // Mapping: frontend passes internal credit units (1 credit = 1 image)
-        // amountCents must be price in cents that Stripe expects.
-        const priceMap = { 1: 50, 10: 99, 50: 399, 100: 699 };
-        const amountCents = priceMap[creditAmount];
-        if (!amountCents) {
-            alert('Invalid top-up option');
+        if (!user || null == user.id) {
+            alert('User information not loaded. Please try again.');
             return;
         }
 
-        try {
-            const res = await axios.post('/payment/create-checkout-session', { amountCents, credits: creditAmount }, { headers: getHeaders() });
-            if (res.data.url) {
-                window.location.href = res.data.url;
-            }
-        } catch (err) {
-            alert("Error occurred: " + (err.response?.data?.error || err.message));
-        }
-    };
+        // Map credits to Paddle Price IDs from env
+        // TODO: Replace with your actual Price IDs
+        const priceMap = {
+            1: import.meta.env.VITE_PADDLE_PRICE_ID_1,
+            10: import.meta.env.VITE_PADDLE_PRICE_ID_10,
+            50: import.meta.env.VITE_PADDLE_PRICE_ID_50,
+            100: import.meta.env.VITE_PADDLE_PRICE_ID_100
+        };
 
-    // Uğurlu ödənişdən qayıdan zaman (URL-də ?success=true varsa)
-    useEffect(() => {
-        const query = new URLSearchParams(window.location.search);
-        const success = query.get("success");
-        if (success) {
-            const demoConfirm = async () => {
-                try {
-                    const userRes = await axios.get('/user/me', { headers: getHeaders() });
-                    // QEYD: Realda bu məlumatı Stripe Webhook-dan almaq daha təhlükəsizdir.
-                    // Amma demo üçün URL-dən və ya session-dan təxmini məlumat ala bilərik.
-                    // Hal-hazırda sadəcə balansı yeniləmək üçün profil sorğusu atırıq.
-                    setBalance(userRes.data.balance);
-                    alert("Payment successful! Your balance has been updated. 🎉");
-                    window.history.replaceState({}, document.title, "/");
-                } catch (e) {
-                    console.error(e);
-                }
+        const priceId = priceMap[creditAmount];
+
+        if (!priceId) {
+            alert('Price ID not configured for this package.');
+            return;
+        }
+
+        window.Paddle.Checkout.open({
+            items: [{ priceId: priceId, quantity: 1 }],
+            customData: {
+                userId: String(user.id),
+                credits: String(creditAmount)
+            },
+            customer: {
+                email: user.email
             }
-            demoConfirm();
-        }
-        if (query.get("canceled")) {
-            alert("Payment canceled.");
-            window.history.replaceState({}, document.title, "/");
-        }
-    }, [navigate]);
+        });
+    };
 
     // Şəkil yaratma / edit / variasiya
     const handleGenerate = async (e) => {

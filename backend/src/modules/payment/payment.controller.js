@@ -1,107 +1,99 @@
-const Stripe = require('stripe');
+const { Paddle, Environment } = require('@paddle/paddle-node-sdk');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+// Initialize Paddle SDK
+const paddle = new Paddle(process.env.PADDLE_API_KEY, {
+    environment: process.env.NODE_ENV === 'production' ? Environment.production : Environment.sandbox,
+});
 
-// Create a Stripe Checkout session. Expect body: { amountCents, credits }
-// `amountCents` - total price in cents (integer)
-// `credits` - how many credits to add to user on success
-const createCheckoutSession = async (req, res) => {
+// Since Paddle Checkout is client-side, we primarily need the backend to handle webhooks
+// to fulfill orders. We can also provide a config endpoint if we want to sign requests server-side,
+// but for this implementation, we will rely on the webhook.
+
+// Webhook handler for Paddle
+const handleWebhook = async (req, res) => {
+    const signature = req.headers['paddle-signature'];
+    const secretKey = process.env.PADDLE_WEBHOOK_SECRET_KEY;
+
+    if (!signature || !secretKey) {
+        return res.status(403).json({ error: 'Missing signature or secret key' });
+    }
+
     try {
-        if (!stripe) return res.status(500).json({ error: 'Stripe not configured' });
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+        // Parse the event using the SDK to verify the signature
+        const eventData = paddle.webhooks.unmarshal(req.body, secretKey, signature);
 
-        const { amountCents, credits } = req.body;
-        if (!amountCents || isNaN(parseInt(amountCents))) return res.status(400).json({ error: 'Invalid amountCents' });
-        const creditsInt = credits ? parseInt(credits) : 0;
+        switch (eventData.eventType) {
+            case 'transaction.completed':
+                await handleTransactionCompleted(eventData.data);
+                break;
+            default:
+                console.log(`Unhandled event type: ${eventData.eventType}`);
+        }
 
-        const successUrl = process.env.STRIPE_SUCCESS_URL || (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}?success=true` : '/?success=true');
-        const cancelUrl = process.env.STRIPE_CANCEL_URL || (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}?canceled=true` : '/?canceled=true');
+        return res.status(200).json({ ok: true });
+    } catch (error) {
+        console.error('Webhook processing error:', error);
+        return res.status(400).json({ error: 'Webhook verification failed' });
+    }
+};
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [
-                {
-                    price_data: {
-                        currency: process.env.CURRENCY || 'usd',
-                        product_data: { name: 'AI Credits' },
-                        unit_amount: parseInt(amountCents),
-                    },
-                    quantity: 1,
-                }
-            ],
-            success_url: successUrl,
-            cancel_url: cancelUrl,
-            metadata: { userId: String(userId), credits: String(creditsInt) }
+const handleTransactionCompleted = async (transaction) => {
+    // Determine userId from customData
+    const userId = transaction.customData?.userId;
+    if (!userId) {
+        console.error('UserId not found in transaction customData', transaction.id);
+        return;
+    }
+
+    // Determine credits from customData or by mapping productId/priceId
+    // Ideally pass `credits` in customData from frontend
+    let credits = transaction.customData?.credits ? parseInt(transaction.customData.credits) : 0;
+
+    // Fallback: simple logic if credits not passed directly (optional, depends on frontend implementation)
+    // if (!credits) { ... logic to map priceId to credits ... }
+
+    // Check if transaction already processed (idempotency)
+    const existingTx = await prisma.transaction.findUnique({
+        where: { externalId: transaction.id }
+    });
+
+    if (existingTx && existingTx.status === 'COMPLETED') {
+        console.log(`Transaction ${transaction.id} already processed.`);
+        return;
+    }
+
+    // Update user balance
+    // If we haven't created a transaction record yet (e.g. from a prior intent), create it now.
+    // Or update existing if we did create one.
+
+    // Note: With Paddle Overlay, we might not have a pre-created pending transaction in DB
+    // unlike the previous Stripe session flow. So we likely create it here.
+
+    if (existingTx) {
+        await prisma.transaction.update({
+            where: { id: existingTx.id },
+            data: { status: 'COMPLETED' }
         });
-
-        // Create pending transaction mapped to session.id
+    } else {
         await prisma.transaction.create({
             data: {
-                userId,
+                userId: userId,
                 type: 'PURCHASE',
-                amount: creditsInt,
-                status: 'PENDING',
-                externalId: session.id,
+                amount: credits,
+                status: 'COMPLETED',
+                externalId: transaction.id
             }
         });
-
-        return res.json({ url: session.url, sessionId: session.id });
-    } catch (error) {
-        console.error('createCheckoutSession error:', error);
-        return res.status(500).json({ error: 'Failed to create checkout session' });
     }
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { balance: { increment: credits } }
+    });
+
+    console.log(`Paddle transaction ${transaction.id} completed. Added ${credits} credits to user ${userId}.`);
 };
 
-// Stripe webhook handler. Expects express.raw body.
-const handleWebhook = async (req, res) => {
-    try {
-        if (!stripe) return res.status(500).json({ error: 'Stripe not configured' });
-        const sig = req.headers['stripe-signature'];
-        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-        let event;
-
-        try {
-            event = webhookSecret
-                ? stripe.webhooks.constructEvent(req.body, sig, webhookSecret)
-                : JSON.parse(req.body.toString());
-        } catch (err) {
-            console.error('Webhook signature verification failed.', err.message);
-            return res.status(400).send(`Webhook Error: ${err.message}`);
-        }
-
-        if (event.type === 'checkout.session.completed') {
-            const session = event.data.object;
-            const sessionId = session.id;
-
-            // Try to find transaction by externalId
-            const tx = await prisma.transaction.findUnique({ where: { externalId: sessionId } });
-            if (!tx) {
-                console.warn('Transaction not found for session', sessionId);
-                return res.status(200).json({ ok: true });
-            }
-
-            if (tx.status === 'COMPLETED') return res.status(200).json({ ok: true });
-
-            // Use metadata credits if available
-            const credits = tx.amount || (session.metadata && parseInt(session.metadata.credits)) || 0;
-
-            await prisma.$transaction([
-                prisma.transaction.update({ where: { id: tx.id }, data: { status: 'COMPLETED' } }),
-                prisma.user.update({ where: { id: tx.userId }, data: { balance: { increment: credits } } })
-            ]);
-
-            console.log(`Stripe session ${sessionId} completed, credited user ${tx.userId} with ${credits}`);
-        }
-
-        return res.status(200).json({ received: true });
-    } catch (error) {
-        console.error('handleWebhook error:', error);
-        return res.status(500).json({ error: 'Webhook processing failed' });
-    }
-};
-
-module.exports = { createCheckoutSession, handleWebhook };
+module.exports = { handleWebhook };
