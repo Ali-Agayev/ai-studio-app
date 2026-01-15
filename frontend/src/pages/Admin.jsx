@@ -81,7 +81,7 @@ const Admin = () => {
     );
 
     const handleGiftCredits = async (user) => {
-        const amount = window.prompt(`${user.email} istifadəçisinə neçə kredit əlavə etmək istəyirsiniz?`, "10");
+        const amount = window.prompt(`${user.email} istifadəçisinə neçə kredit əlavə etmək istəyirsiniz?`, "5");
         if (!amount || isNaN(amount)) return;
         try {
             await axios.post(`/admin/users/${user.id}/gift-credits`, { amount: parseInt(amount) }, { headers: getHeaders() });
