@@ -1,5 +1,5 @@
 import axios from 'axios';
-axios.defaults.baseURL = 'https://ai-studio-app.onrender.com';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://ai-studio-app.onrender.com';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
