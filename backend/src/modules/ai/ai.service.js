@@ -13,9 +13,11 @@ const generateImage = async (prompt) => {
 
   try {
     const response = await openai.images.generate({
+      model: "gpt-image-1",
       prompt: prompt,
       n: 1,
       size: "1024x1024",
+      quality: "medium",
     });
 
     return response.data[0].url;
