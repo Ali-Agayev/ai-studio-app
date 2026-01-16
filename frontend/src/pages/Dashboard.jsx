@@ -173,6 +173,25 @@ const Dashboard = () => {
         }
     };
 
+    const handleDownload = async () => {
+        if (!imageUrl) return;
+        try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ai-image-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download failed:", error);
+            alert("Failed to download image.");
+        }
+    };
+
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <div className="dashboard-layout" style={{ flex: 1 }}>
@@ -348,11 +367,16 @@ const Dashboard = () => {
                                 <div>Magic is happening...</div>
                             </div>
                         ) : imageUrl ? (
-                            <div className="generated-image">
+                            <div className="generated-image" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                                 <img src={imageUrl} alt="Generated AI" />
-                                <a href={imageUrl} target="_blank" rel="noreferrer" className="link-text" style={{ display: 'block', marginTop: '1rem', textAlign: 'center' }}>
-                                    View Full Size
-                                </a>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <a href={imageUrl} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ width: 'auto', fontSize: '0.9rem', padding: '8px 15px' }}>
+                                        🔍 View Full
+                                    </a>
+                                    <button onClick={handleDownload} className="btn" style={{ width: 'auto', fontSize: '0.9rem', padding: '8px 15px', backgroundColor: 'var(--accent-primary)', color: 'white' }}>
+                                        ⬇️ Download
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
