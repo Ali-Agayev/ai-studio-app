@@ -40,6 +40,11 @@ const generateImage = async (req, res) => {
 
         res.json({ imageUrl, cost: IMAGE_COST, remainingBalance: user.balance - IMAGE_COST });
     } catch (error) {
+        console.error("=== GENERATE IMAGE ERROR ===");
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+        console.error("============================");
         res.status(500).json({ error: error.message });
     }
 };
