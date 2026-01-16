@@ -60,7 +60,7 @@ const Login = () => {
                         justifyContent: 'center',
                         backgroundColor: '#ffffff'
                     }}>
-                        <img src="/favicon.svg" alt="AI Studio Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src="/favicon.svg" alt="AI Image Generation Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
 
                     <h2 style={{
@@ -70,7 +70,7 @@ const Login = () => {
                         color: '#1e293b',
                         letterSpacing: '-0.025em'
                     }}>
-                        AI Studio
+                        AI Image Generation
                     </h2>
                     <p style={{
                         color: '#475569',
@@ -125,7 +125,7 @@ const Login = () => {
                         paddingTop: '1.5rem',
                         borderTop: '1px solid #f1f5f9'
                     }}>
-                        New users automatically get 1 free credit.<br />
+                        New users automatically get 2 free credits.<br />
                         <strong style={{ color: '#475569' }}>Secure Google Authentication</strong>
                     </div>
                 </div>

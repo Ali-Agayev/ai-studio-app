@@ -53,13 +53,13 @@ export const Contact = () => (
 
         <div style={{ marginTop: '2rem', padding: '1.5rem', backgroundColor: '#f1f5f9', borderRadius: '10px' }}>
             <h3 style={{ marginTop: 0 }}>Support</h3>
-            <p>Email: <a href="mailto:support@ai-studio.app" style={{ color: '#3b82f6' }}>support@ai-studio.app</a></p>
+            <p>Email: <a href="mailto:support@ai-image-generation.app" style={{ color: '#3b82f6' }}>support@ai-image-generation.app</a></p>
         </div>
 
         <div style={{ marginTop: '2rem' }}>
             <h3>Company Address</h3>
             <p>
-                <strong>AI Studio Inc.</strong><br />
+                <strong>AI Image Generation Inc.</strong><br />
                 123 AI Boulevard, Tech City<br />
                 Digital Nation
             </p>
@@ -71,7 +71,7 @@ export const Terms = () => (
     <PageLayout title="Terms of Service">
         <p>Last updated: January 2026</p>
         <h3>1. Acceptance of Terms</h3>
-        <p>By accessing and using AI Studio, you agree to be bound by these Terms of Service.</p>
+        <p>By accessing and using AI Image Generation, you agree to be bound by these Terms of Service.</p>
 
         <h3>2. Usage of Services</h3>
         <p>You agree to use our services only for lawful purposes. You may not use the platform to generate illegal or harmful content.</p>
@@ -104,7 +104,7 @@ export const Refund = () => (
             <li>Refunds for credit purchases may be requested within 14 days of purchase if the credits have not been used.</li>
             <li>Once credits are used to generate images, the purchase is non-refundable.</li>
         </ul>
-        <p>To request a refund, please contact us at <a href="mailto:support@ai-studio.app">support@ai-studio.app</a>.</p>
+        <p>To request a refund, please contact us at <a href="mailto:support@ai-image-generation.app">support@ai-image-generation.app</a>.</p>
     </PageLayout>
 );
 

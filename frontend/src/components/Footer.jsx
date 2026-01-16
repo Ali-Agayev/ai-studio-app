@@ -29,7 +29,7 @@ const Footer = () => {
             </div>
 
             <div style={{ marginBottom: '0.5rem' }}>
-                <strong>AI Studio</strong> &copy; {new Date().getFullYear()}
+                <strong>AI Image Generation</strong> &copy; {new Date().getFullYear()}
             </div>
             <div>
                 Built for creators.
