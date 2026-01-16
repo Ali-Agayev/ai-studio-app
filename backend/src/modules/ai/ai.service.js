@@ -32,6 +32,7 @@ const editImage = async (imagePath, prompt) => {
 
   try {
     const response = await openai.images.edit({
+      model: "dall-e-2",
       image: fs.createReadStream(imagePath),
       prompt: prompt,
       n: 1,
@@ -49,6 +50,7 @@ const createVariation = async (imagePath) => {
 
   try {
     const response = await openai.images.createVariation({
+      model: "dall-e-2",
       image: fs.createReadStream(imagePath),
       n: 1,
       size: "1024x1024",

@@ -13,7 +13,7 @@ const register = async (req, res) => {
   try {
     const hash = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { email, password: hash, balance: 3 } // 3 free credits
+      data: { email, password: hash, balance: 2 } // 2 free credits
     });
 
     if (!process.env.JWT_SECRET) {
@@ -143,7 +143,7 @@ const googleLogin = async (req, res) => {
       user = await prisma.user.create({
         data: {
           email,
-          balance: 3 // Yeni istifadəçiyə 3 şəkil hədiyyə
+          balance: 2 // Yeni istifadəçiyə 2 şəkil hədiyyə
         }
       });
     }
