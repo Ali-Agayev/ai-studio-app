@@ -167,7 +167,10 @@ const Dashboard = () => {
             }
 
         } catch (err) {
-            setError(err.response?.data?.error || 'An error occurred');
+            console.error(err);
+            const status = err.response?.status || 'Unknown';
+            const msg = err.response?.data?.error || err.message || 'An error occurred';
+            setError(`Error (${status}): ${msg}`);
         } finally {
             setLoading(false);
         }
