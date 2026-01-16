@@ -63,6 +63,7 @@ const createVariation = async (imagePath) => {
 };
 
 module.exports = {
+  openai,
   generateImage,
   editImage,
   createVariation
