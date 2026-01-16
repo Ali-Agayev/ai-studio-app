@@ -338,7 +338,7 @@ const Dashboard = () => {
                                                 {file ? file.name : 'Click to upload image'}
                                             </div>
                                             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                                PNG format, max 10MB
+                                                PNG format, max 4MB
                                             </div>
                                             <input
                                                 type="file"
@@ -347,8 +347,8 @@ const Dashboard = () => {
                                                 onChange={(e) => {
                                                     const selectedFile = e.target.files[0];
                                                     if (selectedFile) {
-                                                        if (selectedFile.size > 10 * 1024 * 1024) {
-                                                            alert('File size must be less than 10MB.');
+                                                        if (selectedFile.size > 4 * 1024 * 1024) {
+                                                            alert('File size must be less than 4MB. Please compress your image.');
                                                             e.target.value = '';
                                                             return;
                                                         }

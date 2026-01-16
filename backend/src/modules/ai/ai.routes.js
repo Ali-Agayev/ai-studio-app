@@ -6,8 +6,8 @@ const multer = require("multer");
 const path = require("path");
 
 const upload = multer({
-    dest: path.join(__dirname, "../../../uploads"), // uploads qovluğu
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    dest: path.join(__dirname, "../../../uploads"),
+    limits: { fileSize: 4 * 1024 * 1024 }, // 4MB limit (OpenAI requirement)
 });
 
 // Public route for testing connection (təhlükəsizlik üçün istehsalatda söndürülə bilər, amma debug üçün lazımdır)
