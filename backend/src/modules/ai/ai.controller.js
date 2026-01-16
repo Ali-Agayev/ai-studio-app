@@ -118,8 +118,39 @@ const createVariation = async (req, res) => {
     }
 };
 
+const testConnection = async (req, res) => {
+    try {
+        if (!process.env.OPENAI_API_KEY) {
+            return res.status(500).json({ status: "fail", message: "OPENAI_API_KEY is missing in env" });
+        }
+
+        const keyPrefix = process.env.OPENAI_API_KEY.substring(0, 7);
+        const keyLength = process.env.OPENAI_API_KEY.length;
+
+        if (!aiService.openai) {
+            return res.status(500).json({ status: "fail", message: "OpenAI client not initialized", keyInfo: `${keyPrefix}... (${keyLength} chars)` });
+        }
+
+        // Try a lightweight call
+        try {
+            await aiService.openai.models.list();
+            res.json({ status: "success", message: "OpenAI Connection Valid", keyInfo: `${keyPrefix}... (${keyLength} chars)` });
+        } catch (apiError) {
+            res.status(500).json({
+                status: "fail",
+                message: "OpenAI API call failed",
+                error: apiError.message,
+                keyInfo: `${keyPrefix}... (${keyLength} chars)`
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
+    }
+};
+
 module.exports = {
     generateImage,
     editImage,
-    createVariation
+    createVariation,
+    testConnection
 };
