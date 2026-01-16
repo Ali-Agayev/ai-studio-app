@@ -327,7 +327,17 @@ const Dashboard = () => {
                                                 type="file"
                                                 accept="image/png"
                                                 style={{ display: 'none' }}
-                                                onChange={(e) => setFile(e.target.files[0])}
+                                                onChange={(e) => {
+                                                    const selectedFile = e.target.files[0];
+                                                    if (selectedFile) {
+                                                        if (selectedFile.size > 4 * 1024 * 1024) {
+                                                            alert('File size must be less than 4MB. Please compress your image.');
+                                                            e.target.value = '';
+                                                            return;
+                                                        }
+                                                        setFile(selectedFile);
+                                                    }
+                                                }}
                                                 required={!file}
                                             />
                                         </label>
@@ -337,7 +347,7 @@ const Dashboard = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <small style={{ color: 'var(--text-secondary)', marginTop: '5px', display: 'block' }}>PNG format, max 4MB</small>
+                                    <small style={{ color: 'var(--text-secondary)', marginTop: '5px', display: 'block' }}>PNG format only, max 4MB (square images work best)</small>
                                 </div>
                             )}
 
