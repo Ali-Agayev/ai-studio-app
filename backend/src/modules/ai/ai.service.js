@@ -23,7 +23,7 @@ const generateImage = async (prompt) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Error:", error);
-    throw new Error("An error occurred while generating image.");
+    throw new Error(error.message || "An error occurred while generating image.");
   }
 };
 
@@ -40,7 +40,7 @@ const editImage = async (imagePath, prompt) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Edit Error:", error);
-    throw new Error("An error occurred while editing image: " + error.message);
+    throw new Error(error.message || "An error occurred while editing image.");
   }
 };
 
@@ -56,7 +56,7 @@ const createVariation = async (imagePath) => {
     return response.data[0].url;
   } catch (error) {
     console.error("OpenAI Variation Error:", error);
-    throw new Error("An error occurred while creating image variation: " + error.message);
+    throw new Error(error.message || "An error occurred while creating image variation.");
   }
 };
 
