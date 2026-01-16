@@ -1,12 +1,14 @@
 const { OpenAI } = require("openai");
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
-
-const fs = require("fs");
+const getClient = () => {
+  if (process.env.OPENAI_API_KEY) {
+    return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return null;
+};
 
 const generateImage = async (prompt) => {
+  const openai = getClient();
   if (!openai) {
     throw new Error("OpenAI API key not found. Please check your configuration.");
   }
@@ -28,6 +30,7 @@ const generateImage = async (prompt) => {
 };
 
 const editImage = async (imagePath, prompt) => {
+  const openai = getClient();
   if (!openai) throw new Error("OpenAI API key not found");
 
   try {
@@ -46,6 +49,7 @@ const editImage = async (imagePath, prompt) => {
 };
 
 const createVariation = async (imagePath) => {
+  const openai = getClient();
   if (!openai) throw new Error("OpenAI API key not found");
 
   try {
@@ -63,7 +67,7 @@ const createVariation = async (imagePath) => {
 };
 
 module.exports = {
-  openai,
+  getClient,
   generateImage,
   editImage,
   createVariation

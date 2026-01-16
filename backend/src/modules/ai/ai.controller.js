@@ -127,13 +127,14 @@ const testConnection = async (req, res) => {
         const keyPrefix = process.env.OPENAI_API_KEY.substring(0, 7);
         const keyLength = process.env.OPENAI_API_KEY.length;
 
-        if (!aiService.openai) {
+        const openai = aiService.getClient();
+        if (!openai) {
             return res.status(500).json({ status: "fail", message: "OpenAI client not initialized", keyInfo: `${keyPrefix}... (${keyLength} chars)` });
         }
 
         // Try a lightweight call
         try {
-            await aiService.openai.models.list();
+            await openai.models.list();
             res.json({ status: "success", message: "OpenAI Connection Valid", keyInfo: `${keyPrefix}... (${keyLength} chars)` });
         } catch (apiError) {
             res.status(500).json({
