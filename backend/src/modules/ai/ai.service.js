@@ -1,4 +1,5 @@
 const { OpenAI } = require("openai");
+const fs = require("fs");
 
 const getClient = () => {
   if (process.env.OPENAI_API_KEY) {
