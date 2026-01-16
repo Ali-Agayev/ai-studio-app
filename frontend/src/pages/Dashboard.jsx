@@ -397,8 +397,18 @@ const Dashboard = () => {
                                     <a href={imageUrl} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ width: 'auto', fontSize: '0.9rem', padding: '8px 15px' }}>
                                         🔍 View Full
                                     </a>
-                                    <button onClick={handleDownload} className="btn" style={{ width: 'auto', fontSize: '0.9rem', padding: '8px 15px', backgroundColor: 'var(--accent-primary)', color: 'white' }}>
-                                        ⬇️ Download
+                                    <button onClick={handleDownload} className="btn" style={{
+                                        width: 'auto',
+                                        fontSize: '0.9rem',
+                                        padding: '10px 25px',
+                                        background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                                        color: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)'
+                                    }}>
+                                        <span style={{ fontSize: '1.2rem' }}>⬇️</span> Download
                                     </button>
                                 </div>
                             </div>
