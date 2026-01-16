@@ -320,9 +320,26 @@ const Dashboard = () => {
                             {(mode === 'edit' || mode === 'variation') && (
                                 <div className="form-group">
                                     <label className="form-label">Upload Image</label>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <label className="btn btn-outline" style={{ cursor: 'pointer', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
-                                            {file ? 'Change image' : 'Choose Image File'}
+                                    <div style={{
+                                        border: '2px dashed var(--border-color)',
+                                        borderRadius: '12px',
+                                        padding: '2rem',
+                                        textAlign: 'center',
+                                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                                        transition: 'all 0.3s ease',
+                                        cursor: 'pointer'
+                                    }}
+                                        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
+                                    >
+                                        <label style={{ cursor: 'pointer', width: '100%', display: 'block' }}>
+                                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
+                                            <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                                                {file ? file.name : 'Click to upload image'}
+                                            </div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                PNG format, max 10MB
+                                            </div>
                                             <input
                                                 type="file"
                                                 accept="image/png"
@@ -330,8 +347,8 @@ const Dashboard = () => {
                                                 onChange={(e) => {
                                                     const selectedFile = e.target.files[0];
                                                     if (selectedFile) {
-                                                        if (selectedFile.size > 4 * 1024 * 1024) {
-                                                            alert('File size must be less than 4MB. Please compress your image.');
+                                                        if (selectedFile.size > 10 * 1024 * 1024) {
+                                                            alert('File size must be less than 10MB.');
                                                             e.target.value = '';
                                                             return;
                                                         }
@@ -341,13 +358,7 @@ const Dashboard = () => {
                                                 required={!file}
                                             />
                                         </label>
-                                        {file && (
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--success)', textAlign: 'center' }}>
-                                                Selected: {file.name}
-                                            </div>
-                                        )}
                                     </div>
-                                    <small style={{ color: 'var(--text-secondary)', marginTop: '5px', display: 'block' }}>PNG format only, max 4MB (square images work best)</small>
                                 </div>
                             )}
 
